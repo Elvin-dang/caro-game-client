@@ -1,10 +1,11 @@
 import React, { useState    } from 'react';
-import { Avatar, Button, Typography, Link, Grid, Checkbox, FormControlLabel, TextField, CssBaseline, Container } from '@material-ui/core';
+import { Avatar, LinearProgress, Button, Typography, Link, Grid, Checkbox, FormControlLabel, TextField, CssBaseline, Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Redirect } from 'react-router-dom';
 import Facebook from './Facebook'
 import Google from './Google'
+import axios from 'axios'
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -28,37 +29,46 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn() {
   const [user, setUser] = useState({email: "", password: ""});
   const [isRedirect, setIsRedirect] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const classes = useStyles();
 
   const setRedirectTrue = ()=>{
     setIsRedirect(true);
   }
+  const setIsLoadingTrue = ()=> {
+    setIsLoading(true);
+  }
+  const setIsLoadingFalse = ()=> {
+    setIsLoading(false);
+  }
   const handleSubmit = async (e)=>{
     try{
+      setIsLoading(true);
       e.preventDefault();
-      await fetch(process.env.REACT_APP_api_domain+"/user/signin", {
-        method: "POST",
+      await axios({
+        method: 'post',
+        url: process.env.REACT_APP_api_domain+"/user/signin",
+        data: JSON.stringify(user),
         headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(user),
-      }).then(response => response.json()).then(data=>{
-        if(data.error)  alert(data.error)
-        else{
-            localStorage.setItem('login', JSON.stringify({
+      }).then(data => {
+        if(data.data.token)
+          localStorage.setItem('login', JSON.stringify({
             login:true,
-            token:data.token,
-            data:data,
+            token:data.data.token,
           }));
-        }
+        setIsLoading(false);
         setIsRedirect(true);
       })
     }catch(e){
-      console.log(e);
+      setIsLoading(false);
+      alert("Wrong email or password");
     }
   };
   return (
     <div>
     { (isRedirect === true) ? (<Redirect to='/' />) :
     (<Container component="main" maxWidth="xs">
+      {isLoading ? <LinearProgress></LinearProgress> : <></>}
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -68,7 +78,7 @@ export default function SignIn() {
           Sign in
         </Typography>
         <form method="form" id="form-data" className="form" onSubmit={handleSubmit} autoComplete="off">
-          <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" 
+          <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus 
             onChange={e => setUser({ ...user, email: e.target.value})}  />
           <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Password" type="password" id="password"
             onChange={e => setUser({ ...user, password: e.target.value})} autoComplete="current-password" />
@@ -87,10 +97,10 @@ export default function SignIn() {
           </Button>
           <Grid container mb={2} className={classes.submit}>
             <Grid item xs >
-              <Facebook setIsRedirect={setRedirectTrue}/>
+              <Facebook setIsRedirect={setRedirectTrue} setIsLoadingTrue={setIsLoadingTrue} setIsLoadingFalse={setIsLoadingFalse}/>
             </Grid>
             <Grid item>
-              <Google setIsRedirect={setRedirectTrue}/>
+              <Google setIsRedirect={setRedirectTrue} setIsLoadingTrue={setIsLoadingTrue} setIsLoadingFalse={setIsLoadingFalse}/>
             </Grid>
           </Grid>
           <Grid container>

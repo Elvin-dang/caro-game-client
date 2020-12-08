@@ -53,12 +53,9 @@ export default function SignUp() {
         })
       }
     }catch(e){
-      console.log(e);
+      alert("Please try again!");
     }
   };
-  // const fblog = ()=>{
-  //   setIsRedirect(true);
-  // }
 
   return (
     <div>

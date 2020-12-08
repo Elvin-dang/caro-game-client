@@ -1,9 +1,10 @@
 import React from 'react';
 import { GoogleLogin } from 'react-google-login';
 export default function Google(props) {
-	const { setIsRedirect } = props;
+	const { setIsRedirect, setIsLoadingTrue, setIsLoadingFalse } = props;
 	const responseGoogle = async(response) => {
 		try{
+			setIsLoadingTrue();
 		  	if(response.profileObj!==undefined){
 				const user = { tokenId: response.tokenId };
 				await fetch(process.env.REACT_APP_api_domain+"/oauth/google", {
@@ -12,6 +13,7 @@ export default function Google(props) {
 					body: JSON.stringify(user),
 				}).then(resp => resp.json()).then(data=>{
 				if(data.token){
+					setIsLoadingFalse();
 					localStorage.setItem('login', JSON.stringify({
 						login:true,
 						token:data.token,
@@ -19,13 +21,15 @@ export default function Google(props) {
 					setIsRedirect();
 				}
 				else {
-					  alert("Please try again");
-					}
+					setIsLoadingFalse();
+					alert("Please try again");
+				}
 				})
 			}
 		}
 		catch(e){
-			alert(e);
+			setIsLoadingFalse();
+			alert("Please try again!");
 		}
 	}
 	return (

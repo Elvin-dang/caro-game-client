@@ -1,9 +1,10 @@
 import React from 'react';
 import FacebookLogin from 'react-facebook-login'
 export default function Facebook(props) {
-	const { setIsRedirect } = props;
+	const { setIsRedirect, setIsLoadingTrue, setIsLoadingFalse } = props;
 	const responseFacebook = async (response) => {
 		try{
+			setIsLoadingTrue();
 			const user = { userID: response.userID, accessToken: response.accessToken };
 			await fetch(process.env.REACT_APP_api_domain+"/oauth/facebook", {
 				method: "POST",
@@ -11,6 +12,7 @@ export default function Facebook(props) {
 				body: JSON.stringify(user),
 			}).then(resp => resp.json()).then(data=>{
 			if(data.token){
+				setIsLoadingFalse();
 				localStorage.setItem('login', JSON.stringify({
 				login:true,
 				token:data.token,
@@ -18,11 +20,13 @@ export default function Facebook(props) {
 			  setIsRedirect();
 			}
 			else {
-				  alert("Please try again");
-				}
+				setIsLoadingFalse();
+				alert("Please try again");
+			}
 			})
 		}catch(e){
-			alert(e);
+			setIsLoadingFalse();
+			alert("Please try again!");
 		}
 	};
 	const componentClicked = () => {
@@ -30,7 +34,6 @@ export default function Facebook(props) {
 	};
     return (<div><FacebookLogin
           appId={process.env.REACT_APP_fbid}
-          autoLoad={true}
           fields="name,email"
           onClick={componentClicked}
           callback={responseFacebook}
