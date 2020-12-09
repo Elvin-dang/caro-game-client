@@ -1,21 +1,26 @@
-import React from 'react';
+import React,{useState, useEffect} from 'react';
 import { AppBar, Link, Button, Toolbar, Typography, IconButton, MenuItem, Menu } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import io from 'socket.io-client'
 
 
 export default function TopBar(props) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const socket = io.connect(process.env.REACT_APP_api_domain_withouAPI);
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-
-  let name=null;
+  const [curUserName,setCurUserName] = useState("");
+  const [curUserId,setCurUserId] = useState("");
+  const [usersOnline,setUsersOnline] = useState([]);
+  
+  let name=null ;
   const isLoggedIn = props.isLogin;
   // if(props.name!==undefined)
   // {
   //   name = props.name;
   // };
 
-
+  console.log("islogged : " + isLoggedIn );
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -24,6 +29,32 @@ export default function TopBar(props) {
     setAnchorEl(null);
   };
 
+  if( isLoggedIn===true)
+  {
+    const token = JSON.parse(localStorage.getItem('login')).token;
+    console.log(token);
+
+    fetch(process.env.REACT_APP_api_domain+"/user", {
+      method: "GET",
+      headers: {'Content-Type':'application/json',Authorization: token},
+    }).then(response => response.json()).then(data=>{
+      setCurUserId(data._id);
+      setCurUserName(data.name);
+    });
+    console.log(curUserId);
+    console.log(curUserName);
+    name = curUserName;
+
+    
+    if(curUserName!=null){
+      socket.emit("login",[curUserId,curUserName ]); 
+    }
+  }
+  useEffect(()=>{
+    socket.on('updateUesrList', (response) => {setUsersOnline(response)}); 
+  });
+  console.log(usersOnline);
+  
   return (
     <div className="root">
       <AppBar position="static">
@@ -34,6 +65,7 @@ export default function TopBar(props) {
           <Typography variant="h6" className="title">
             Hello {!isLoggedIn ? <Button href="/signin" color="inherit">Login</Button>: name}
           </Typography>
+          
           {isLoggedIn && (
             <div>
               <IconButton
@@ -67,6 +99,14 @@ export default function TopBar(props) {
           )}
         </Toolbar>
       </AppBar>
+      {usersOnline && 
+            <div>
+              <h3>List Users Online</h3>
+              {usersOnline.map(item =>
+                                <li key={item[1]}><span>{item[2]}</span></li>
+                          )}
+            </div>
+          }
     </div>
   );
 }
