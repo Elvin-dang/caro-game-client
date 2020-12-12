@@ -5,7 +5,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Redirect } from 'react-router-dom';
 import Facebook from './Facebook'
 import Google from './Google'
-import axios from 'axios'
+import userApi from '../api/userApi';
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -45,23 +45,20 @@ export default function SignIn() {
     try{
       setIsLoading(true);
       e.preventDefault();
-      await axios({
-        method: 'post',
-        url: process.env.REACT_APP_api_domain+"/user/signin",
-        data: JSON.stringify(user),
-        headers: {'Content-Type':'application/json'},
-      }).then(data => {
-        if(data.data.token)
+      const response = await userApi.signin(user);
+      if(response.token) {
           localStorage.setItem('login', JSON.stringify({
             login:true,
-            token:data.data.token,
+            token:response.token,
           }));
         setIsLoading(false);
         setIsRedirect(true);
-      })
-    }catch(e){
+        } else {
+            alert(response.message);
+        }
+    } catch(err) {
       setIsLoading(false);
-      alert("Wrong email or password");
+      alert('Wrong email or password');
     }
   };
   return (
