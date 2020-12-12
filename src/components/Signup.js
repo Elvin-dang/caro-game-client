@@ -3,6 +3,7 @@ import { Avatar, Button, Typography, Link, Grid, Checkbox, FormControlLabel, Tex
 import { makeStyles } from '@material-ui/core/styles';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Redirect } from 'react-router-dom';
+import userApi from '../api/userApi';
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -36,24 +37,20 @@ export default function SignUp() {
         alert("Wrong Re-type password. Please try again!");
       }else{
         e.preventDefault();
-        await fetch(process.env.REACT_APP_api_domain+"/user/signup", {
-          method: "POST",
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify(user),
-        }).then(response => response.json()).then(data=>{
-          if(data.error)  alert(data.error)
-          else{
-              localStorage.setItem('login', JSON.stringify({
-              login:true,
-              token:data.token,
-              data:data,
-            }));
-          }
+        const response = await userApi.signup(user);
+        console.log(response);
+        if(response.token) {
+          localStorage.setItem('login', JSON.stringify({
+            login:true,
+            token:response.token,
+          }));
           setIsRedirect(true);
-        })
+        } else {
+            alert(response.message);
+        }
       }
     }catch(e){
-      alert("Please try again!");
+      alert("Please try again, Email is already exists!");
     }
   };
 
