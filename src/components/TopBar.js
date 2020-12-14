@@ -9,13 +9,12 @@ import userApi from '../api/userApi';
 export default function TopBar(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  let name=null ;
   const isLoggedIn = props.isLogin;
   // if(props.name!==undefined)
   // {
   //   name = props.name;
   // };
-
+  let name = null;
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -24,16 +23,14 @@ export default function TopBar(props) {
     setAnchorEl(null);
   };
   
-  const getUserName = async () =>
+  const getUserName = () =>
   {
-    name = await userApi.getCurUser();      
+    if( localStorage.getItem('curUser')){
+      name = JSON.parse(localStorage.getItem('curUser')).name;
+    }
   }
-
-  if( isLoggedIn===true)
-  {
-    getUserName();
-  }
-
+  
+  getUserName();
   
 
   return (

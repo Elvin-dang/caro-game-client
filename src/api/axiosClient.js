@@ -10,9 +10,12 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use((config) => {
-    const token = JSON.parse(localStorage.getItem('login')).token;
-    if(token !== null) {
-        config.headers['Authorization'] = token;
+    if(localStorage.getItem('login'))
+    {
+        const token = JSON.parse(localStorage.getItem('login')).token;
+        if(token !== null) {
+            config.headers['Authorization'] = token;
+        }
     }
     return config;
 }, (err) => {

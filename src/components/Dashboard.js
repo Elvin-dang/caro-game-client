@@ -1,53 +1,41 @@
 import React,{useState, useEffect} from 'react';
-import {Card, AppBar, Link, Button, Toolbar, Typography, IconButton, MenuItem, Menu } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import { withStyles } from '@material-ui/core/styles';
+import {Card,CardContent,Table,TableBody ,TableCell ,TableContainer ,TableHead ,Paper ,TableRow  ,TablePagination, Grid, Link, Button} from '@material-ui/core';
 import io from 'socket.io-client'
+import { Redirect,useHistory} from 'react-router-dom';
 
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
 
-export default function TopBar(props) {
-  const socket = io.connect(process.env.REACT_APP_api_domain_withouAPI);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const [curUserName,setCurUserName] = useState("");
-  const [curUserId,setCurUserId] = useState("");
+export default function Dashboard(props) {
+  const history = useHistory();
+  let curUserName = null;
+  let curUserId = null;
   const [usersOnline,setUsersOnline] = useState([]);
   const [playRooms,setPlayRooms] = useState([]);
-  let name=null ;
   const isLoggedIn = props.isLogin;
-  // if(props.name!==undefined)
-  // {
-  //   name = props.name;
-  // };
-
-  console.log("islogged : " + isLoggedIn );
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  if( isLoggedIn===true)
+  const socket = props.socket;
+  if(isLoggedIn === true)
   {
-    const token = JSON.parse(localStorage.getItem('login')).token;
-    console.log(token);
-
-    fetch(process.env.REACT_APP_api_domain+"/user", {
-      method: "GET",
-      headers: {'Content-Type':'application/json',Authorization: token},
-    }).then(response => response.json()).then(data=>{
-      setCurUserId(data._id);
-      setCurUserName(data.name);
-    });
-    console.log(curUserId);
-    console.log(curUserName);
-    name = curUserName;
-
-    
-    if(curUserName!=null){
-      socket.emit("login",[curUserId,curUserName ]); 
+    const curUser = JSON.parse(localStorage.getItem('curUser'));
+    curUserName = curUser.name;
+    curUserId = curUser._id;
+    if(curUserName!==null){
+      socket.emit("login",[curUserId,curUserName]); 
     }
   }
   useEffect(()=>{
@@ -58,60 +46,66 @@ export default function TopBar(props) {
   
   const createRoom = () => {
     socket.emit("createRoom",[curUserName]);
+    joinRoom((playRooms.length +1));
   }
 
-  return (
-    <div className="root">
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" className="menuButton" color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" className="title">
-            Hello {!isLoggedIn ? <Button href="/signin" color="inherit">Login</Button>: name}
-          </Typography>
-          
-          {isLoggedIn && (
-            <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                {}<AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={open}
-                onClose={handleClose}
-              >
-                <MenuItem ><Link href="/profile">Profile</Link></MenuItem>
-                <MenuItem ><Link href="/signout">Logout</Link></MenuItem>
-              </Menu>
-            </div>
-          )}
-        </Toolbar>
-      </AppBar>
-      {isLoggedIn && 
-            <div>
-              <Button onClick = {createRoom}>Tạo phòng mới</Button>
+  const joinRoom = (id) => {
+    socket.emit("joinRoom",id);
+    const path = "room/" +id;
+    history.push(path);
+  }
 
-              <h3>List Users Online</h3>
-              {usersOnline.map(item =>
-                                <li key={item[1]}><span>{item[2]}</span></li>
-                          )}
+  const leaveRoom = () =>{
+    socket.emit("leaveRoom",curUserId);
+  };
+  leaveRoom();
+
+
+  return (
+    <div >
+      {!isLoggedIn ? <h1>Please login to join Playground</h1>: 
+            <div>
+              <div style={{textAlign: 'center',padding:'10px'}}>
+                <Button variant="contained" color="primary" onClick={() => { createRoom() }} >Tạo phòng mới</Button>
+              </div>
+              <Grid container >
+                <Grid item xs={12}>
+                  <Grid container justify="center" >
+                  <TableContainer style={{width:'60%'}} component={Paper}>
+                    <Table >
+                      <TableHead>
+                        <TableRow>
+                          <StyledTableCell>ID room</StyledTableCell>
+                          <StyledTableCell align="right">Người tạo</StyledTableCell>
+                          <StyledTableCell align="right">Trạng thái</StyledTableCell>
+                          <StyledTableCell align="right"></StyledTableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                      {playRooms.map((row) => (
+                        <StyledTableRow key={row[0]} >
+                          <StyledTableCell component="th" scope="row">
+                            {row[0]}
+                          </StyledTableCell>
+                          <StyledTableCell align="right">{row[1]}</StyledTableCell>
+                          <StyledTableCell align="right">{row[2]===0 ? 'đang chờ' : 'đã chơi'}</StyledTableCell>
+                          <StyledTableCell align="right"><Button color="primary" onClick={() => { joinRoom(row[0]) }}>Tham gia</Button></StyledTableCell>
+                        </StyledTableRow>
+                      ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                    <Card style={{margin:'10px'}}>
+                      <CardContent style={{textAlign: 'center'}}>
+                      <h2>List Users Online</h2>
+                      {usersOnline.map(item =>
+                                        <li key={item[1]}><span>{item[2]}</span></li>
+                                  )}
+                      </CardContent>
+                    </Card>
+                    </Grid>
+                  </Grid>
+                </Grid>
             </div>
           }
     </div>
