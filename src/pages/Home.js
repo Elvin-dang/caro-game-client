@@ -4,7 +4,14 @@ import TopBar from '../components/TopBar';
 function Home() {
 	let isLogin=false;
     if(JSON.parse(localStorage.getItem('login'))) isLogin =JSON.parse(localStorage.getItem('login')).login;
-	  return (<div><TopBar isLogin={isLogin}/></div>);
+		if(isLogin === true){
+
+		}  
+	return (
+	  <div>
+		  <TopBar isLogin={isLogin}/>
+		  {/* <Dashboard isLogin={isLogin}/> */}
+	  </div>);
 	}
 
 export default Home;
