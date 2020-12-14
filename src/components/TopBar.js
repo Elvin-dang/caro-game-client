@@ -2,7 +2,8 @@ import React,{useState, useEffect} from 'react';
 import { AppBar, Link, Button, Toolbar, Typography, IconButton, MenuItem, Menu } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import io from 'socket.io-client'
+import io from 'socket.io-client';
+import CaroGame from './CaroGame';
 
 
 export default function TopBar(props) {
@@ -100,13 +101,13 @@ export default function TopBar(props) {
         </Toolbar>
       </AppBar>
       {usersOnline && 
-            <div>
-              <h3>List Users Online</h3>
-              {usersOnline.map(item =>
-                                <li key={item[1]}><span>{item[2]}</span></li>
-                          )}
-            </div>
-          }
+        <div>
+          <h3>List Users Online</h3>
+          {usersOnline.map(item =>
+            <li key={item[1]}><span>{item[2]}</span></li>
+          )}
+        </div>
+      }
     </div>
   );
 }
