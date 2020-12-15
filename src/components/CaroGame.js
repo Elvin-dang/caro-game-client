@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import CaroBoard from './CaroBoard';
+import { io } from 'socket.io-client';
+import { SportsHockeyRounded } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
     btnBold: {
@@ -16,10 +18,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const size = 25;
+const size = 20;
 const winCondition = 5;
 
-const CaroGame = () => {
+const CaroGame = ({ socket, isStart, room }) => {
     let tmpArr = Array(size);
     for (let i = 0; i < size; i++) {
       tmpArr[i] = Array(size).fill(null);
@@ -37,6 +39,12 @@ const CaroGame = () => {
         isDescending: true
     });
     const classes = useStyles();
+
+    useEffect(()=>{
+        socket.on('updateGameConfig', response => setGameConfig(response));
+        socket.on('opponentMove',  response => handleClick(response.i, response.j));
+    }, [socket]);
+
     const history = gameConfig.history;
     const current = history[gameConfig.stepNumber];
     const winner = calculateWinner(current.squares);
@@ -75,6 +83,7 @@ const CaroGame = () => {
     }
 
     const handleClick = (i, j) => {
+        if(!isStart) return;
         const newHistory = gameConfig.history.slice(0, gameConfig.stepNumber + 1);
         const current = history[gameConfig.stepNumber];
         const squares = current.squares.slice();
@@ -87,14 +96,20 @@ const CaroGame = () => {
         if(calculateWinner(squares) || squares[i][j]) return;
 
         squares[i][j] = gameConfig.xIsNext ? 'X' : 'O';
-        setGameConfig({
-            ...gameConfig,
-            history: newHistory.concat([{
-                squares: squares,
-                location: {x: i, y: j}
-            }]),
-            stepNumber: newHistory.length,
-            xIsNext: !gameConfig.xIsNext
+        
+        socket.emit('nextMove', {
+            i: i,
+            j: j,
+            room: room,
+            gameConfig: {
+                ...gameConfig,
+                history: newHistory.concat([{
+                    squares: squares,
+                    location: {x: i, y: j}
+                }]),
+                stepNumber: newHistory.length,
+                xIsNext: !gameConfig.xIsNext
+            }
         });
     }
 
@@ -113,15 +128,16 @@ const CaroGame = () => {
                         squares={current.squares}
                         onClick={(i, j) => handleClick(i, j)}
                         winner={winner}
+                        isStart={isStart}
                     />
                 </div>
-                <div className={classes.gameInfo}>
+                {/* <div className={classes.gameInfo}>
                     <div>
                         <Button onClick={sort}>Thứ tự bước {arrow}</Button>
                     </div>
                     <div>{status}</div>
                     <ol>{moves}</ol>
-                </div>
+                </div> */}
             </div>
         </div>
     )
