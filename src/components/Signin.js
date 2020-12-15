@@ -51,6 +51,8 @@ export default function SignIn() {
             login:true,
             token:response.token,
           }));
+          const curUser = await userApi.getCurUser();   
+          localStorage.setItem('curUser', JSON.stringify(curUser));
         setIsLoading(false);
         setIsRedirect(true);
         } else {
@@ -63,7 +65,7 @@ export default function SignIn() {
   };
   return (
     <div>
-    { (isRedirect === true) ? (<Redirect to='/' />) :
+    { (isRedirect === true) ? (<Redirect to='/dashboard' />) :
     (<Container component="main" maxWidth="xs">
       {isLoading ? <LinearProgress></LinearProgress> : <></>}
       <CssBaseline />

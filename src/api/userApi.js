@@ -13,6 +13,10 @@ const userApi = {
         const url = `user/${userId}`;
         return axiosClient.get(url);
     },
+    getCurUser: () => {
+        const url = 'user';
+        return axiosClient.get(url);
+    }
     // checkLogin: () => {
     //     const url = 'user/checkLogin';
     //     return axiosClient.post(url);
