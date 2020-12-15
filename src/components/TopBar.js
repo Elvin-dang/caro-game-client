@@ -1,26 +1,16 @@
 import React,{useState, useEffect} from 'react';
-import { AppBar, Link, Button, Toolbar, Typography, IconButton, MenuItem, Menu } from '@material-ui/core';
+import {Card, AppBar, Link, Button, Toolbar, Typography, IconButton, MenuItem, Menu } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import io from 'socket.io-client'
-
+import userApi from '../api/userApi';
 
 export default function TopBar(props) {
-  const socket = io.connect(process.env.REACT_APP_api_domain_withouAPI);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [curUserName,setCurUserName] = useState("");
-  const [curUserId,setCurUserId] = useState("");
-  const [usersOnline,setUsersOnline] = useState([]);
-  
-  let name=null ;
   const isLoggedIn = props.isLogin;
-  // if(props.name!==undefined)
-  // {
-  //   name = props.name;
-  // };
 
-  console.log("islogged : " + isLoggedIn );
+  let name = null;
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -28,33 +18,17 @@ export default function TopBar(props) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  if( isLoggedIn===true)
+  
+  const getUserName = () =>
   {
-    const token = JSON.parse(localStorage.getItem('login')).token;
-    console.log(token);
-
-    fetch(process.env.REACT_APP_api_domain+"/user", {
-      method: "GET",
-      headers: {'Content-Type':'application/json',Authorization: token},
-    }).then(response => response.json()).then(data=>{
-      setCurUserId(data._id);
-      setCurUserName(data.name);
-    });
-    console.log(curUserId);
-    console.log(curUserName);
-    name = curUserName;
-
-    
-    if(curUserName!=null){
-      socket.emit("login",[curUserId,curUserName ]); 
+    if( localStorage.getItem('curUser')){
+      name = JSON.parse(localStorage.getItem('curUser')).name;
     }
   }
-  useEffect(()=>{
-    socket.on('updateUesrList', (response) => {setUsersOnline(response)}); 
-  });
-  console.log(usersOnline);
   
+  getUserName();
+  
+
   return (
     <div className="root">
       <AppBar position="static">
@@ -99,14 +73,6 @@ export default function TopBar(props) {
           )}
         </Toolbar>
       </AppBar>
-      {usersOnline && 
-            <div>
-              <h3>List Users Online</h3>
-              {usersOnline.map(item =>
-                                <li key={item[1]}><span>{item[2]}</span></li>
-                          )}
-            </div>
-          }
     </div>
   );
 }
