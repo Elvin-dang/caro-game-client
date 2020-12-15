@@ -11,10 +11,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 export default function MessageItem(props) {
-    const { key, message } = props;
+    const { message } = props;
     const classes = useStyles();
     return (
-        <Paper id={key} className={classes.paper}>
+        <Paper className={classes.paper}>
             <Grid container wrap="nowrap" spacing={2}>
                 <Grid item>
                     <Avatar>{message.name.charAt(0)}</Avatar>

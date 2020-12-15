@@ -4,6 +4,7 @@ import Dashboard from '../components/Dashboard'
 import io from 'socket.io-client'
 import {BrowserRouter as Router,  Switch,  Route} from "react-router-dom";
 import Room from '../components/Room';
+import MessageList from '../components/MessageList';
 function Home() {
 	const socket = io.connect(process.env.REACT_APP_api_domain_withoutAPI,
 		{
@@ -19,6 +20,9 @@ function Home() {
 		  <TopBar isLogin={isLogin}/>
 		  <Router>
 				<Switch>
+					<Route path="/message">
+		  				<MessageList socket={socket} isLogin={isLogin}/>
+					</Route>
 					<Route path="/room/:id">
 		  				<Room socket={socket} isLogin={isLogin} />
 					</Route>
