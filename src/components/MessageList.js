@@ -9,9 +9,9 @@ const useStyles = makeStyles((theme) => ({
 //    overflow: 'hidden',
     margin: theme.spacing(2, 2),
     width: 400,
-    height: 400,
+    height: 380,
     backgroundColor:'#cfe8fc',
-    position: 'fixed',
+//    position: 'fixed',
   },
   messlist: {
     flexGrow: 1,
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   	margin: theme.spacing(2, 2),
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+//    justifyContent: 'center',
   }
 }));
 
@@ -32,24 +32,23 @@ export default function MessageList(props) {
 	const classes = useStyles();
 	const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
-	const [isRedirect, setIsRedirect] = useState(false);
+
 	const messagesEndRef = useRef(null);
     const {socket} = props;
-    //const { isLogin} = props;
-    const isLogin = false;
-    if(isLogin === true)
+    const [isRedirect, setIsRedirect] = useState(false);
+    const { isLogin} = props;
+    if(isLogin !== true)
     {
-        // if(curUser!==null){
-        //     socket.emit("login", {
-        //         id: curUser._id, 
-        //         name: curUser.name
-        //     }); 
-        // }
-    }//else setIsRedirect(true);
+        setIsRedirect(true);
+    }
 
 
 	const addMessages = () => {
-		setMessages(m => [...m, {name: "Vinh", message:"hhaha"}]);
+		//setMessages(m => [...m, {name: "Vinh", message:"hhaha"}]);
+        if(message!==""){
+            setMessages(m => [...m, {name: getUserName(), message:message}]);
+            setMessage("");
+        }
 	};
     const getUserName = () =>
     {
@@ -58,15 +57,15 @@ export default function MessageList(props) {
         }
         else return 0;
     }
-    const sendNewMessage = (m)=> {
+    const sendNewMessage = ()=> {
         const name = getUserName();
         socket.emit("newMessage", {message: message, name: name}); //gửi event về server
-        m.value = ""; 
+        setMessage("");
     }
 
 
 	useEffect(()=>{
-        socket.on('updateMessage',response => {
+        socket.on('newMessage',response => {
             setMessages(draft => [ ...draft, {name: response.name, message:response.message}])});
         messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
@@ -74,8 +73,8 @@ export default function MessageList(props) {
 
     return (
         <div>
-        { (isRedirect === true) ? (<Redirect to='/signin' />) :
-        (<div className={classes.root} id="messages"	>
+        { (isRedirect === true) ? (<Redirect to='/signin' />) :(
+        <div className={classes.root} id="messages"	>
             <div className={classes.messlist}>
                 {messages.map((item, index) =>
                     <Message key={index} message={item}/>
@@ -83,8 +82,8 @@ export default function MessageList(props) {
                 <div ref={messagesEndRef} />
             </div>
         	<div className={classes.searchIcon}>
-      			<TextField fullWidth id="outlined-basic" label="Message" variant="outlined" onChange={e => setMessage(e.target.value)}/>
-    			<button onClick={addMessages}>
+      			<TextField fullWidth id="outlined-basic" label="Message" variant="outlined" onChange={e => setMessage(e.target.value)} value={message}/>
+                <button onClick={sendNewMessage}>
     				<SendIcon color="primary" />
     			</button>
     		</div>

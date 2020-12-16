@@ -13,6 +13,8 @@ export default function Facebook(props) {
 					login:true,
 					token:data.token,
 				}));
+				const curUser = await oauthApi.getCurUser();   
+		        localStorage.setItem('curUser', JSON.stringify(curUser));
 				setIsLoadingFalse();
 				setIsRedirect();
 			} else {

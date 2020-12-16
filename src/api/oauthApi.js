@@ -8,6 +8,10 @@ const oauthApi =  {
     facebookLogin: (data) => {
         const url = 'oauth/facebook';
         return axiosClient.post(url, data);
+    },
+    getCurUser: () => {
+        const url = 'user';
+        return axiosClient.get(url);
     }
 }
 

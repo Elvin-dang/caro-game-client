@@ -2,7 +2,7 @@ import React,{ useState, useEffect} from 'react';
 import { useParams } from 'react-router-dom';
 import {Card, CardContent, Grid, Link, Button,Paper, Box} from '@material-ui/core';
 import CaroGame from './CaroGame';
-
+import MessageRoom from '../components/MessageRoom';
 export default function Room(props) {    
     const curUser = JSON.parse(localStorage.getItem('curUser'));
     const socket = props.socket;
@@ -151,7 +151,7 @@ export default function Room(props) {
                                     <h3 style={{color: room.nextTurn === 2 ? 'red' : 'black'}}>Người chơi (O): {room.player2.name ? room.player2.name : <Button onClick={() => joinPlayer(2)} style={{margin:'15px'}} variant="contained">Tham gia</Button>}</h3>
                                     <Button onClick={() => leavePlayer()} style={{marginBottom:'15px'}} variant="contained" color="secondary" disabled={room.status === 0 ? false : true}>Làm khán giả</Button>
                                     <Button onClick={() => room.status === 0 ? handlePlay() : handleRestart()} style={{marginBottom:'30px', display: 'block'}} variant="contained" color="primary">{room.status === 0 ? "Bẳt đầu" : "Chơi lại"}</Button>
-                                    <Paper style={{width:'300px',height:'300px',borderColor:'red'}}>Khung chat</Paper>
+                                    <MessageRoom socket={socket} roomId={room.roomId}/>
                                 </Grid>
                             </Grid>
                         </Grid>

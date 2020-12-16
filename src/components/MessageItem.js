@@ -20,7 +20,7 @@ export default function MessageItem(props) {
                     <Avatar>{message.name.charAt(0)}</Avatar>
                 </Grid>
                 <Grid item>
-                    <b>{props.message.name}</b>
+                    <b>{message.name}</b>
                     <Typography >{message.message}</Typography>
                 </Grid>
             </Grid>
