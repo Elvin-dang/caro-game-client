@@ -14,10 +14,9 @@ const useStyles = makeStyles((theme) => ({
 
 const winCondition = 5;
 
-const CaroRow = ({ row, rowIdx, winner, onClick }) => {
+const CaroRow = ({ row, rowIdx, winner, onClick, isStart }) => {
     const squareRow = row.map((square, index) => {
         let win = false;
-        console.log(winner);
 
         if(winner) {
             if(winner.direction === "ToRight" &&
@@ -37,7 +36,7 @@ const CaroRow = ({ row, rowIdx, winner, onClick }) => {
             winner.x - index === rowIdx - winner.y) win = true;
         }
 
-        return <CaroSquare isWinSquare={win} value={square} onClick={() => onClick(rowIdx, index)} key={"s" + index}/>
+        return <CaroSquare isWinSquare={win} value={square} onClick={() => onClick(rowIdx, index)} isStart={isStart} key={"s" + index}/>
     });
 
     return (

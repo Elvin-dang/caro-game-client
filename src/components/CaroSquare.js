@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const CaroSquare = ({ isWinSquare, value, onClick }) => {
+const CaroSquare = ({ isWinSquare, value, onClick, isStart }) => {
     const classes = useStyles();
 
     return isWinSquare ? (

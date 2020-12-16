@@ -46,7 +46,7 @@ export default function Dashboard(props) {
   
   const createRoom = () => {
     socket.emit("createRoom", curUser.name);
-    joinRoom((playRooms.length +1));
+    joinRoom((playRooms.length + 1));
   }
 
   const joinRoom = (id) => {
