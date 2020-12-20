@@ -9,7 +9,6 @@
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.5.0",
     "axios": "^0.21.0",
-    "firebase": "^8.2.1",
     "query-string": "^6.13.7",
     "react": "^17.0.1",
     "react-avatar-edit": "^0.9.0",

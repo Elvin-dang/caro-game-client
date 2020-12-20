@@ -1,27 +1,34 @@
 import React,{ useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Button, Avatar, Box, CssBaseline, Grid, Typography, Container, TextField } from '@material-ui/core';
+import { Paper, Button, Avatar, Box, CssBaseline, Grid, Typography, Container, TextField } from '@material-ui/core';
 import userApi from '../api/userApi';
 import AvatarEdit from 'react-avatar-edit';
 
 
 export default function Profile(props) {  
 	const [user, setUser] = useState({ name: "", password: ""});
+	const [curUser, setCurUser] = useState(JSON.parse(localStorage.getItem('curUser')));
 	const [imageSource, setImageSource] = useState(null);
 	const [avatar, setAvatar] = useState(null);
-    const curUser = JSON.parse(localStorage.getItem('curUser'));
     const handleChangeName = async () =>{
-    	const response = await userApi.updateUser({ email: curUser.email, name: user.name });
-    	curUser.name = user.name;
-    	localStorage.setItem('curUser', JSON.stringify(curUser));
+    	if(user.name!=="")
+    	{
+    		const response = await userApi.updateUser({ email: curUser.email, name: user.name });
+	    	await setCurUser({ ...curUser, name: user.name});
+	    	localStorage.setItem('curUser', JSON.stringify(curUser));
+    	}
     }
     const handleChangePassword = async () =>{
-    	const response = await userApi.changePassword({ email: curUser.email, password: user.password });
+    	if(user.password!==""){
+    		const response = await userApi.changePassword({ email: curUser.email, password: user.password });
+    	}
     }
     const handleUploadAvatar = async ()=>{
+    	await setCurUser({ ...curUser, avatar: avatar});
+    	await localStorage.setItem('curUser', JSON.stringify(curUser));
 		const response = await userApi.updateUser({ email: curUser.email, avatar: avatar });
-		curUser.avatar = user.avatar;
-    	localStorage.setItem('curUser', JSON.stringify(curUser));
+    	setAvatar(null);
+    	setImageSource(null);
     }
     const onClose = () => {
 		setAvatar(null);
@@ -53,54 +60,54 @@ export default function Profile(props) {
 	        	<Container >
 	        		<Grid container spacing={1} >
 	        			<Grid item xs={3} >
-	        			<Box bgcolor="info.main" height={500}>
-		        				<Box display="flex" justifyContent="center" p={3} >
-										<Avatar alt={curUser.name} src={curUser.avatar} />
-		        				</Box>
-		        				<Box display="flex" justifyContent="left" m={1} p={1} >
-									<h3>{curUser.name}</h3>
-								</Box>
+	        				<Box bgcolor="info.main" height={500}>
+	        					<Paper>
+			        				<Box display="flex" justifyContent="center" p={3} >
+										<Avatar alt="avatar" src={curUser.avatar} />
+			        				</Box>
+			        				<Box display="flex" justifyContent="left" m={1} p={1} >
+										<h3>{curUser.name}</h3>
+									</Box>
+								</Paper>
 							</Box>
 	        			</Grid>
 	        			<Grid item xs={9}>
 	        				<Box bgcolor="#e0e0e0" height={500}>
-	        					<Box display="flex" justifyContent="left" p={5} >
+	        					<Box display="flex" justifyContent="left" p={3} >
 									<Typography component="h5" variant="h5" align="left" color="textPrimary" gutterBottom>
 										Edit your profile
 									</Typography>
 								</Box>
 	        					<Box display="flex" justifyContent="left" px={5} >
-	        						<Grid  container spacing={4} >
+	        						<Grid  container spacing={3} >
 		        						<Grid item xs={12}>
-			        					<form method="form" id="form-data1" onSubmit={handleChangeName} autoComplete="off">
 											<TextField variant="outlined" margin="normal" required fullWidth id="name" label="New name" name="name" 
-												onChange={e => setUser({ ...user, name: e.target.value})} value={user.name} />
-											<Button type="submit" fullWidth variant="contained" color="primary" >Change name</Button>
+												onChange={e => setUser({ ...user, name: e.target.value})} />
+											<Button onClick={handleChangeName} fullWidth variant="contained" color="primary" >Change name</Button>
+										</Grid>
+										<Grid item xs={12}>
+											<TextField variant="outlined" margin="normal" required fullWidth name="password" label="New password" type="password" id="password"
+												onChange={e => setUser({ ...user, password: e.target.value})} />
+											<Button onCLick={handleChangePassword} fullWidth variant="contained" color="primary" >Change Password</Button>
+										</Grid>
+										<Grid item xs={6}>
+											<AvatarEdit
+											width={390}
+											height={295}
+											onCrop={onCrop}
+											onClose={onClose}
+											onBeforeFileLoad={onBeforeFileLoad}
+											src={imageSource}
+											/>
+										</Grid>
+										<Grid item xs={6}>	
+											<img src={avatar} alt="Preview" />
+										</Grid>
+										<form method="form" onSubmit={handleUploadAvatar}>
+											<Box display="flex" justifyContent="left" m={1} p={1} >
+												<Button type="submit" fullWidth variant="contained" color="primary" >Apply</Button>
+											</Box>
 										</form>
-										</Grid>
-											<Grid item xs={12} mt={3}>
-											<form method="form" id="form-data2" onSubmit={handleChangePassword} autoComplete="off">
-												<TextField variant="outlined" margin="normal" required fullWidth name="password" label="New password" type="password" id="password"
-													onChange={e => setUser({ ...user, password: e.target.value})} value={user.password} autoComplete="current-password" />
-												<Button type="submit" fullWidth variant="contained" color="primary" >Change Password</Button>
-											</form>
-											<div>
-												<AvatarEdit
-												width={390}
-												height={295}
-												onCrop={onCrop}
-												onClose={onClose}
-												onBeforeFileLoad={onBeforeFileLoad}
-												src={imageSource}
-												/>
-												<img src={avatar} alt="Preview" />
-											</div>
-											<form method="form" onSubmit={handleUploadAvatar}>
-												<Box display="flex" justifyContent="left" m={1} p={1} >
-													<Button type="submit" fullWidth variant="contained" color="primary" >Upload</Button>
-												</Box>
-											</form>
-										</Grid>
 									</Grid>
 								</Box>
 	        				</Box>
