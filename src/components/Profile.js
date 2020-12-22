@@ -31,7 +31,7 @@ export default function Profile(props) {
     }
     const handleChangePassword = async () =>{
     	if(user.password!==""){
-    		const response = await userApi.changePassword({ email: curUser.email, password: user.password });
+    		const response = await userApi.updateUser({ email: curUser.email, password: user.password });
     	}
     }
     const handleUploadAvatar = async ()=>{
