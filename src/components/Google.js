@@ -23,6 +23,7 @@ export default function Google(props) {
 					alert("Please try again");
 				}
 			}
+			else setIsLoadingFalse();
 		}
 		catch(e){
 			setIsLoadingFalse();

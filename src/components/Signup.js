@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Avatar, Button, Typography, Link, Grid, Checkbox, FormControlLabel, TextField, CssBaseline, Container } from '@material-ui/core';
+import { Avatar, Button, Typography, Grid, Checkbox, FormControlLabel, TextField, CssBaseline, Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import userApi from '../api/userApi';
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,33 +32,23 @@ export default function SignUp() {
 
   const handleSubmit = async (e)=>{
     try{
+      e.preventDefault();
       if(user.password !== repassword)
       {
         alert("Wrong Re-type password. Please try again!");
       }else{
-        e.preventDefault();
         const response = await userApi.signup(user);
-        console.log(response);
-        if(response.token) {
-          localStorage.setItem('login', JSON.stringify({
-            login:true,
-            token:response.token,
-          }));
-          const curUser = await userApi.getCurUser();
-          localStorage.setItem('curUser', JSON.stringify(curUser));
-          setIsRedirect(true);
-        } else {
-            alert(response.message);
-        }
+        alert(response.message);
+        setIsRedirect(true);
       }
-    }catch(e){
-      alert("Please try again, Email is already exists!");
+    }catch(err){
+      if(err.response.status === 403) alert(err.response.data.message);
     }
   };
 
   return (
     <div>
-    { (isRedirect === true) ? (<Redirect to='/' />) :
+    { (isRedirect === true) ? (<Redirect to='/signin' />) :
     (<Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
@@ -77,10 +67,6 @@ export default function SignUp() {
             onChange={e => setUser({ ...user, password: e.target.value})} />
           <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Re-type Password" type="password" id="repassword"
             onChange={e => setRepassword(e.target.value)} />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
           <Button
             type="submit"
             fullWidth
@@ -90,12 +76,10 @@ export default function SignUp() {
           >
             Sign Up
           </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="/signin" variant="body2">
+          <Grid container justify="center" alignItems="center">
+              <Link to="/signin" variant="body2">
                 Have account already? Signin
               </Link>
-            </Grid>
           </Grid>
         </form>
       </div>

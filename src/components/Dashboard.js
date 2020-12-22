@@ -10,7 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import io from 'socket.io-client'
-import { Redirect,useHistory} from 'react-router-dom';
+import { Redirect, useHistory} from 'react-router-dom';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -194,7 +194,7 @@ export default function Dashboard(props) {
 
   return (
     <div >
-      {!isLoggedIn ? <h1>Please login to join Playground</h1>: 
+      {!isLoggedIn ? <Redirect to="/signin"/>: 
             <div>
               <div style={{textAlign: 'center',padding:'10px'}}>
                 <Button variant="contained" color="primary" onClick={() => handleOpenCreateRoomModal()} >Tạo phòng mới</Button>

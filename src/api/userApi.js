@@ -17,6 +17,31 @@ const userApi = {
         const url = 'user';
         return axiosClient.get(url);
     },
+    activeAccount: (token) => {
+        const url = 'user/active';
+        return axiosClient.post(url, {
+            token: token
+        });
+    },
+    forgetPassword: (email) => {
+        const url = 'user/forgetPassword';
+        return axiosClient.post(url, {
+            email: email
+        });
+    },
+    confirmToken: (token) => {
+        const url = 'user/confirmToken';
+        return axiosClient.post(url, {
+            token: token
+        });
+    },
+    resetPassword: (token, password) => {
+        const url = 'user/resetPassword';
+        return axiosClient.post(url, {
+            token: token,
+            password: password
+        });
+    },
     changePassword: (data) => {
         const url = 'user/changePassword';
         return axiosClient.post(url, data);
