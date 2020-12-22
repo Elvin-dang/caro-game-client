@@ -2,7 +2,7 @@ import React,{useState, useEffect} from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import {Card,CardContent,Table,TableBody ,TableCell ,TableContainer ,TableHead ,Paper ,TableRow  ,TablePagination, Grid, Link, Button} from '@material-ui/core';
 import io from 'socket.io-client'
-import { Redirect,useHistory} from 'react-router-dom';
+import { Redirect, useHistory} from 'react-router-dom';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -61,7 +61,7 @@ export default function Dashboard(props) {
 
   return (
     <div >
-      {!isLoggedIn ? <h1>Please login to join Playground</h1>: 
+      {!isLoggedIn ? <Redirect to="/signin"/>: 
             <div>
               <div style={{textAlign: 'center',padding:'10px'}}>
                 <Button variant="contained" color="primary" onClick={() => createRoom()} >Tạo phòng mới</Button>

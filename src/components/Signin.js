@@ -1,8 +1,8 @@
 import React, { useState    } from 'react';
-import { Avatar, LinearProgress, Button, Typography, Link, Grid, Checkbox, FormControlLabel, TextField, CssBaseline, Container } from '@material-ui/core';
+import { Avatar, LinearProgress, Button, Typography, Grid, Checkbox, FormControlLabel, TextField, CssBaseline, Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import Facebook from './Facebook'
 import Google from './Google'
 import userApi from '../api/userApi';
@@ -55,17 +55,17 @@ export default function SignIn() {
           localStorage.setItem('curUser', JSON.stringify(curUser));
         setIsLoading(false);
         setIsRedirect(true);
-        } else {
-            alert(response.message);
-        }
+      } else {
+          alert(response.message);
+      }
     } catch(err) {
       setIsLoading(false);
-      alert('Wrong email or password');
+      if(err.response.status === 401) alert(err.response.data.message);
     }
   };
   return (
     <div>
-    { (isRedirect === true) ? (<Redirect to='/dashboard' />) :
+    { (isRedirect === true) ? (<Redirect to='/' />) :
     (<Container component="main" maxWidth="xs">
       {isLoading ? <LinearProgress></LinearProgress> : <></>}
       <CssBaseline />
@@ -81,10 +81,6 @@ export default function SignIn() {
             onChange={e => setUser({ ...user, email: e.target.value})}  />
           <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Password" type="password" id="password"
             onChange={e => setUser({ ...user, password: e.target.value})} autoComplete="current-password" />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
           <Button
             type="submit"
             fullWidth
@@ -104,12 +100,12 @@ export default function SignIn() {
           </Grid>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <Link to="/forget-password" variant="body2">
                 Forgot password?
               </Link>
             </Grid>
             <Grid item>
-              <Link href="/signup" variant="body2">
+              <Link to="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
