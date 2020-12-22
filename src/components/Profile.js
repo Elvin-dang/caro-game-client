@@ -1,11 +1,22 @@
 import React,{ useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import { Redirect } from 'react-router-dom';
 import { Paper, Button, Avatar, Box, CssBaseline, Grid, Typography, Container, TextField } from '@material-ui/core';
 import userApi from '../api/userApi';
 import AvatarEdit from 'react-avatar-edit';
 
-
-export default function Profile(props) {  
+const useStyles = makeStyles((theme) => ({
+	paper: {
+		display: 'flex',
+		padding: theme.spacing(1),
+	},
+	infomation: {
+		display: 'flex',
+		padding: theme.spacing(2),
+	}
+}));
+export default function Profile(props) { 
+	const classes = useStyles(); 
 	const [user, setUser] = useState({ name: "", password: ""});
 	const [curUser, setCurUser] = useState(JSON.parse(localStorage.getItem('curUser')));
 	const [imageSource, setImageSource] = useState(null);
@@ -60,19 +71,41 @@ export default function Profile(props) {
 	        	<Container >
 	        		<Grid container spacing={1} >
 	        			<Grid item xs={3} >
-	        				<Box bgcolor="info.main" height={500}>
-	        					<Paper>
+	        				<Box bgcolor="info.main" height={750}>
+	        					<Paper class={classes.paper}>
 			        				<Box display="flex" justifyContent="center" p={3} >
 										<Avatar alt="avatar" src={curUser.avatar} />
 			        				</Box>
 			        				<Box display="flex" justifyContent="left" m={1} p={1} >
-										<h3>{curUser.name}</h3>
+										<h2>{curUser.name}</h2>
 									</Box>
+								</Paper>
+								<Paper class={classes.infomation}>
+			        				<Grid  container spacing={1} >
+			        					<Grid item xs={12}>
+			        						<h4>Email: {curUser.email}</h4>
+			        					</Grid>
+			        					<Grid item xs={12}>
+			        						<h4>Email: {curUser.email}</h4>
+			        					</Grid>
+			        					<Grid item xs={12}>
+			        						<h4>Email: {curUser.email}</h4>
+			        					</Grid>
+			        					<Grid item xs={12}>
+			        						<h4>Email: {curUser.email}</h4>
+			        					</Grid>
+			        					<Grid item xs={12}>
+			        						<h4>Email: {curUser.email}</h4>
+			        					</Grid>
+			        					<Grid item xs={12}>
+			        						<h4>Email: {curUser.email}</h4>	
+			        					</Grid>
+			        				</Grid>
 								</Paper>
 							</Box>
 	        			</Grid>
 	        			<Grid item xs={9}>
-	        				<Box bgcolor="#e0e0e0" height={500}>
+	        				<Box bgcolor="#e0e0e0" height={750}>
 	        					<Box display="flex" justifyContent="left" p={3} >
 									<Typography component="h5" variant="h5" align="left" color="textPrimary" gutterBottom>
 										Edit your profile
