@@ -29,6 +29,9 @@ function Home() {
 						<Route path="/room/:id">
 							<Room socket={socket} isLogin={isLogin} />
 						</Route>
+						<Route path="/profile">
+							<Profile isLogin={isLogin}/>
+						</Route>
 						<Route path="/">
 							<Dashboard socket={socket} isLogin={isLogin}/>
 						</Route>
