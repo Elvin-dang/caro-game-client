@@ -44,6 +44,8 @@ export default function SignUp() {
             login:true,
             token:response.token,
           }));
+          const curUser = await userApi.getCurUser();
+          localStorage.setItem('curUser', JSON.stringify(curUser));
           setIsRedirect(true);
         } else {
             alert(response.message);
@@ -72,7 +74,7 @@ export default function SignUp() {
           <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" 
             onChange={e => setUser({ ...user, email: e.target.value})}  />
           <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Password" type="password" id="password"
-            onChange={e => setUser({ ...user, password: e.target.value})} autoComplete="current-password" />
+            onChange={e => setUser({ ...user, password: e.target.value})} />
           <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Re-type Password" type="password" id="repassword"
             onChange={e => setRepassword(e.target.value)} />
           <FormControlLabel

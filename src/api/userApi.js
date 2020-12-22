@@ -16,18 +16,14 @@ const userApi = {
     getCurUser: () => {
         const url = 'user';
         return axiosClient.get(url);
-    }
-    // checkLogin: () => {
-    //     const url = 'user/checkLogin';
-    //     return axiosClient.post(url);
-    // },
-    // changePassword: (data) => {
-    //     const url = 'user/changePassword';
-    //     return axiosClient.post(url, data);
-    // },
-    // updateUser: (id, user) => {
-    //     const url = `user/${id}`;
-    //     return axiosClient.patch(url, user);
-    // }
+    },
+    changePassword: (data) => {
+        const url = 'user/changePassword';
+        return axiosClient.post(url, data);
+    },
+    updateUser: (user) => {
+        const url = `user/profile`;
+        return axiosClient.patch(url, user);
+    },
 };
 export default userApi;
