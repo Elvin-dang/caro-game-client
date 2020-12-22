@@ -38,7 +38,6 @@ export default function SignUp() {
         alert("Wrong Re-type password. Please try again!");
       }else{
         const response = await userApi.signup(user);
-        
         alert(response.message);
         setIsRedirect(true);
       }
@@ -65,7 +64,7 @@ export default function SignUp() {
           <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" 
             onChange={e => setUser({ ...user, email: e.target.value})}  />
           <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Password" type="password" id="password"
-            onChange={e => setUser({ ...user, password: e.target.value})} autoComplete="current-password" />
+            onChange={e => setUser({ ...user, password: e.target.value})} />
           <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Re-type Password" type="password" id="repassword"
             onChange={e => setRepassword(e.target.value)} />
           <Button
