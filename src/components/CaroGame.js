@@ -93,7 +93,10 @@ const CaroGame = ({ socket, isStart, room }) => {
             return true;
         });
 
-        if(calculateWinner(squares) || squares[i][j]) return;
+        if(calculateWinner(squares) || squares[i][j])
+        {
+            console.log("win is "+ gameConfig.xIsNext ? 'X' : 'O')
+        }
 
         squares[i][j] = gameConfig.xIsNext ? 'X' : 'O';
         
