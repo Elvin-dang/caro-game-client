@@ -6,7 +6,7 @@ import {BrowserRouter as Router,  Switch,  Route} from "react-router-dom";
 import Room from '../components/Room';
 import MessageList from '../components/MessageList';
 function Home() {
-	const socket = io.connect(process.env.REACT_APP_api_domain_withoutAPI,
+	const socket = io.connect(process.env.REACT_APP_test_api_domain_withoutAPI,
 		{
 			transports: ['websocket'], 
 			upgrade: false
