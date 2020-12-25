@@ -156,7 +156,7 @@ export default function Dashboard(props) {
   const createRoom = () => {
     socket.emit("createRoom", {'hostName':curUser.name,'newRoomType':newRoomType,'newRoomPassword':newRoomPassword});
     socket.emit("joinRoom", playRooms.length + 1);
-    const path = "room/" + playRooms.length + 1;
+    const path = "room/" + (playRooms.length + 1);
     history.push(path);
   }
 

@@ -19,6 +19,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "socket.io-client": "^3.0.4",
+    "sweetalert": "^2.1.2",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
