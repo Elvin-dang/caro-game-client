@@ -14,7 +14,7 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import swal from 'sweetalert';
-
+import loading from "./loading.svg"
 //styles setting
 const styles = (theme) => ({
   root: {
@@ -96,6 +96,7 @@ export default function Dashboard(props) {
   const [joinRoomPassword,setJoinRoomPassword] = useState('');
   const [roomSelected,setRoomSelected] = useState({});
   const [idJoinRoom, setIdJoinRoom] = useState('')
+  const [isFindQuickGame,setIsFindQuickGame] = useState(false);
 
   console.log(playRooms);
   const handleNewRoomTypeChange = (event) => {
@@ -181,6 +182,14 @@ export default function Dashboard(props) {
           }
         });
       }});
+    socket.on('findedQuickGame',  (response) => {
+      if(response.idPlayer1 === curUser._id || response.idPlayer2 === curUser._id)
+      {
+        setIsFindQuickGame(false);
+        joinRoom(response.idRoom,'unlock',null);
+        swal.close();
+      }
+    });
   }, []);
   
   const createRoom = () => {
@@ -233,7 +242,18 @@ export default function Dashboard(props) {
   };
 
   const quickPlay = () =>{
-
+    socket.emit("joinQuickGame", {"id":curUser._id});
+    setIsFindQuickGame(true);
+    swal({
+      title: "Chơi nhanh",
+      text: "Đang tiến hành ghép cặp...",
+      icon: loading,
+      button: "Hủy",
+      dangerMode: true,
+    }).then(() => {
+      setIsFindQuickGame(false);
+      socket.emit("outQuickGame", {"id":curUser._id});
+    });
   }
 
   return (
