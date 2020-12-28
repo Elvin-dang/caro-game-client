@@ -14,9 +14,12 @@ const useStyles = makeStyles((theme) => ({
 	infomation: {
 		display: 'flex',
 		padding: theme.spacing(2),
-	}
+	},
+	marginTop: {
+		marginTop: '20px',
+	  },
 }));
-export default function Profile(props) { 
+export default function Profile() { 
 	const classes = useStyles(); 
 	const [user, setUser] = useState({ name: "", password: ""});
 	const [curUser, setCurUser] = useState(JSON.parse(localStorage.getItem('curUser')));
@@ -72,7 +75,7 @@ export default function Profile(props) {
 	        	<Container >
 	        		<Grid container spacing={1} >
 	        			<Grid item xs={3} >
-							<InfomationBox curUser={curUser}/>
+							<InfomationBox user={curUser}/>
 	        			</Grid>
 	        			<Grid item xs={9}>
 	        				<Box bgcolor="#e0e0e0" height={750}>
@@ -83,15 +86,27 @@ export default function Profile(props) {
 								</Box>
 	        					<Box display="flex" justifyContent="left" px={5} >
 	        						<Grid  container spacing={3} >
-		        						<Grid item xs={12}>
-											<TextField variant="outlined" margin="normal" required fullWidth id="name" label="New name" name="name" 
-												onChange={e => setUser({ ...user, name: e.target.value})} />
-											<Button onClick={handleChangeName} fullWidth variant="contained" color="primary" >Change name</Button>
+										<Grid item xs={12}>
+											<Grid  container spacing={3} >
+												<Grid item xs={8}>
+													<TextField variant="outlined" margin="normal" required fullWidth id="name" label="New name" name="name" 
+														onChange={e => setUser({ ...user, name: e.target.value})} />
+												</Grid>
+												<Grid item xs={4}>
+													<Button className={classes.marginTop}  onClick={handleChangeName} fullWidth variant="contained" color="primary" >Change name</Button>
+												</Grid>
+											</Grid>
 										</Grid>
 										<Grid item xs={12}>
-											<TextField variant="outlined" margin="normal" required fullWidth name="password" label="New password" type="password" id="password"
-												onChange={e => setUser({ ...user, password: e.target.value})} />
-											<Button onCLick={handleChangePassword} fullWidth variant="contained" color="primary" >Change Password</Button>
+											<Grid  container spacing={3} >
+												<Grid item xs={8}>
+													<TextField variant="outlined" margin="normal" required fullWidth name="password" label="New password" type="password" id="password"
+														onChange={e => setUser({ ...user, password: e.target.value})} />
+												</Grid>
+												<Grid item xs={4}>
+													<Button className={classes.marginTop} onCLick={handleChangePassword} fullWidth variant="contained" color="primary" >Change Password</Button>
+												</Grid>
+											</Grid>
 										</Grid>
 										<Grid item xs={6}>
 											<AvatarEdit

@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MessageBox from './MessageBox';
 export default function MessageRoom(props) {
-    const {socket, roomId} = props;
+    const {socket, room} = props;
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
     const messagesEndRef = useRef(null);
-    const getUserName = () =>
+    const getUser = () =>
     {
         if( localStorage.getItem('curUser')){
-            return JSON.parse(localStorage.getItem('curUser')).name;
+            return JSON.parse(localStorage.getItem('curUser'));
         }
         else return 0;
     }
@@ -16,8 +16,8 @@ export default function MessageRoom(props) {
     const sendNewMessage = (e)=> {
         e.preventDefault()
         if(message!==""){
-            const name = getUserName();
-            socket.emit("chat-room", {message: message, name: name, roomId: roomId}); //gửi event về server
+            const user= getUser();
+            socket.emit("chat-room", {message: message, user: user, room: room}); //gửi event về server
             setMessage("");
         }
     }

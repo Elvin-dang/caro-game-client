@@ -93,11 +93,8 @@ const CaroGame = ({ socket, isStart, room }) => {
             return true;
         });
 
-        if(calculateWinner(squares) || squares[i][j])
-        {
-            console.log("win is "+ gameConfig.xIsNext ? 'X' : 'O')
-        }
-
+        if(squares[i][j] || calculateWinner(squares)) return;
+       
         squares[i][j] = gameConfig.xIsNext ? 'X' : 'O';
         
         socket.emit('nextMove', {
@@ -114,6 +111,19 @@ const CaroGame = ({ socket, isStart, room }) => {
                 xIsNext: !gameConfig.xIsNext
             }
         });
+        
+        if(calculateWinner(squares)) 
+        {
+            console.log("send request");
+            socket.emit("gameResult", {
+                room: {
+                    ...room,
+                    status: 0
+                },
+                winner: gameConfig.xIsNext ? 1 : 2,
+                resultType: "winLose" // Còn 1 type nữa là "draw"
+            });
+        }
     }
 
     const sort = () => {

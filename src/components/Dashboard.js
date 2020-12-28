@@ -96,7 +96,6 @@ export default function Dashboard(props) {
   const [newRoomPassword,setNewRoomPassword] = useState('');
   const [joinRoomPassword,setJoinRoomPassword] = useState('');
   const [roomSelected,setRoomSelected] = useState({});
-  console.log(playRooms);
   const handleNewRoomTypeChange = (event) => {
     setNewRoomType(event.target.value);
   };
@@ -156,7 +155,7 @@ export default function Dashboard(props) {
   const createRoom = () => {
     socket.emit("createRoom", {'hostName':curUser.name,'newRoomType':newRoomType,'newRoomPassword':newRoomPassword});
     socket.emit("joinRoom", playRooms.length + 1);
-    const path = "room/" + playRooms.length + 1;
+    const path = "room/" + (playRooms.length + 1);
     history.push(path);
   }
 
@@ -234,7 +233,7 @@ export default function Dashboard(props) {
                       <CardContent style={{textAlign: 'left'}}>
                       <h2>List Users Online</h2>
                       {usersOnline.map(item =>
-                            <li key={item.userId}><Button href={'/item/'+item.userId} size="small" style={{textTransform: 'none'}}>{item.userName}</Button></li>
+                            <li key={item.userId}><Button href={'/user/'+item.userId} size="small" style={{textTransform: 'none'}}>{item.userName}</Button></li>
                       )}
                       </CardContent>
                     </Card>

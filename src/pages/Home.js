@@ -6,6 +6,7 @@ import {BrowserRouter as Router,  Switch,  Route, Redirect} from "react-router-d
 import Room from '../components/Room';
 import MessageList from '../components/MessageList';
 import Profile from '../components/Profile';
+import AnotherProfile from '../components/AnotherProfile';
 function Home() {
 	const socket = io.connect(process.env.REACT_APP_test_api_domain_withoutAPI,
 		{
@@ -29,8 +30,11 @@ function Home() {
 						<Route path="/room/:id">
 							<Room socket={socket} isLogin={isLogin} />
 						</Route>
+						<Route path="/user/:id">
+							<AnotherProfile />
+						</Route>
 						<Route path="/profile">
-							<Profile isLogin={isLogin}/>
+							<Profile />
 						</Route>
 						<Route path="/">
 							<Dashboard socket={socket} isLogin={isLogin}/>

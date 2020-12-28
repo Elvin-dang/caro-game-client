@@ -1,17 +1,34 @@
-import React,{ useState } from 'react';
+import React,{ useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Redirect } from 'react-router-dom';
 import { Paper, Button, Avatar, Box, CssBaseline, Grid, Typography, Container, TextField } from '@material-ui/core';
 import InfomationBox from './InfomationBox';
 import HistoryBox from './HistoryBox';
+import userApi from '../api/userApi';
+import {useParams} from "react-router-dom";
+
 const useStyles = makeStyles((theme) => ({
 }));
+const history = [];
 
-export default function Profile(props) { 
-    const { curUser } = props;
+export default function AnotherProfile() { 
+	const [resUser, setResUser] = useState({avatar:null, email:"", elo:0, date:"", rank:"", game:{win:0, lose:0, total:0}});
 	const classes = useStyles();
+	const { id } = useParams();
+	
+	useEffect(()=>{
+		const fetchUser = async () => {
+            try {
+                const response = await userApi.getUser(id);
+				setResUser(response);
+            } catch(err) {
 
-	return (<div>{ !curUser && (<Redirect to='/signin' />) }
+            }
+        }
+
+        fetchUser();
+	}, []);
+	return (<div>{ resUser===null && (<Redirect to='/signin' />) }
 		<CssBaseline />
     	<main>
         {/* Hero unit */}
@@ -25,8 +42,8 @@ export default function Profile(props) {
 	        <div>
 	        	<Container >
 	        		<Grid container spacing={1} >
-	        			<Grid item xs={3} >
-	        				<InfomationBox curUser={curUser}/>
+						<Grid item xs={3} >
+							<InfomationBox user={resUser}/>
 	        			</Grid>
 	        			<Grid item xs={9}>
 	        				<Box bgcolor="#e0e0e0" height={750}>
@@ -35,7 +52,7 @@ export default function Profile(props) {
 										Match history
 									</Typography>
                                 </Box>
-                                <InfomationBox matchHistory={matchHistory}/>
+                                <HistoryBox matchHistory={history}/>
 	        				</Box>
 	        			</Grid>
 	        		</Grid>
