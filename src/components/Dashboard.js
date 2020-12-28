@@ -234,7 +234,7 @@ export default function Dashboard(props) {
                       <CardContent style={{textAlign: 'left'}}>
                       <h2>List Users Online</h2>
                       {usersOnline.map(item =>
-                            <li key={item.userId}><span>{item.userName}</span></li>
+                            <li key={item.userId}><Button href={'/item/'+item.userId} size="small" style={{textTransform: 'none'}}>{item.userName}</Button></li>
                       )}
                       </CardContent>
                     </Card>
