@@ -9,13 +9,12 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import io from 'socket.io-client'
 import { Redirect, useHistory} from 'react-router-dom';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-
-
+import swal from 'sweetalert';
+import loading from "./loading.svg"
 //styles setting
 const styles = (theme) => ({
   root: {
@@ -96,6 +95,9 @@ export default function Dashboard(props) {
   const [newRoomPassword,setNewRoomPassword] = useState('');
   const [joinRoomPassword,setJoinRoomPassword] = useState('');
   const [roomSelected,setRoomSelected] = useState({});
+  const [idJoinRoom, setIdJoinRoom] = useState('')
+  const [isFindQuickGame,setIsFindQuickGame] = useState(false);
+
   const handleNewRoomTypeChange = (event) => {
     setNewRoomType(event.target.value);
   };
@@ -106,6 +108,10 @@ export default function Dashboard(props) {
 
   const handleJoinRoomPasswordChange = (event) => {
     setJoinRoomPassword(event.target.value);
+  }
+
+  const handleIdJoinRoomChange= (event) => {
+    setIdJoinRoom(event.target.value);
   }
 
   const handleClickOpenDialog = (room) => {
@@ -150,10 +156,43 @@ export default function Dashboard(props) {
   useEffect(()=>{
     socket.on('updateUsersOnlineList', (response) => setUsersOnline(response)); 
     socket.on('updateRoomsList',  (response) => setPlayRooms(response));
+    socket.on('inviteToPlay', (response) => {
+      console.log(response);
+      if(response.invitePlayerId === curUser._id)
+      {
+        swal({
+          title: "Bạn nhận được lời mời?",
+          text: "Người chơi " + response.playerInviteName + " mời bạn vào room " + response.room + "!",
+          icon: "warning",
+          buttons: true,
+          dangerMode: false,
+        })
+        .then((accept) => {
+          if (accept) {
+            for (let a=0; a < playRooms.length; a++) {
+              if (playRooms[a].roomId == response.room) {
+                console.log('accept invited');
+                joinRoom(playRooms[a].roomId,playRooms[a].type,playRooms[a].password)
+                break;
+              }
+            }
+          }
+          else {
+          }
+        });
+      }});
+    socket.on('findedQuickGame',  (response) => {
+      if(response.idPlayer1 === curUser._id || response.idPlayer2 === curUser._id)
+      {
+        setIsFindQuickGame(false);
+        joinRoom(response.idRoom,'unlock',null);
+        swal.close();
+      }
+    });
   }, []);
   
   const createRoom = () => {
-    socket.emit("createRoom", {'hostName':curUser.name,'newRoomType':newRoomType,'newRoomPassword':newRoomPassword});
+    socket.emit("createRoom", {'hostName':curUser.name,'newRoomType':newRoomType,'newRoomPassword':newRoomPassword,'newRoomTimePerRound':0});
     socket.emit("joinRoom", playRooms.length + 1);
     const path = "room/" + (playRooms.length + 1);
     history.push(path);
@@ -174,6 +213,7 @@ export default function Dashboard(props) {
   }
 
   const joinLockRoom = () =>{
+    
     console.log(roomSelected.password)
     if(joinRoomPassword === roomSelected.password)
     {
@@ -182,7 +222,17 @@ export default function Dashboard(props) {
       history.push(path);
     }
     else {
-      alert("Password không chính xác !!!");
+      swal("Ôi không!", "Password không chính xác!", "error");
+    }
+  }
+
+  const joinRoomById = () =>{
+    for (let a=0; a < playRooms.length; a++) {
+      if (playRooms[a].roomId == idJoinRoom) {
+        console.log(playRooms[a]);
+        joinRoom(playRooms[a].roomId,playRooms[a].type,playRooms[a].password)
+        break;
+      }
     }
   }
 
@@ -190,13 +240,30 @@ export default function Dashboard(props) {
     socket.emit("leaveRoom", curUser._id);
   };
 
+  const quickPlay = () =>{
+    socket.emit("joinQuickGame", {"id":curUser._id});
+    setIsFindQuickGame(true);
+    swal({
+      title: "Chơi nhanh",
+      text: "Đang tiến hành ghép cặp...",
+      icon: loading,
+      button: "Hủy",
+      dangerMode: true,
+    }).then(() => {
+      setIsFindQuickGame(false);
+      socket.emit("outQuickGame", {"id":curUser._id});
+    });
+  }
 
   return (
     <div >
       {!isLoggedIn ? <Redirect to="/signin"/>: 
             <div>
               <div style={{textAlign: 'center',padding:'10px'}}>
+                <Button style={{marginRight:'30px',backgroundColor:"green"}} variant="contained" color="primary" onClick={() => quickPlay()} >Chơi nhanh</Button>
                 <Button variant="contained" color="primary" onClick={() => handleOpenCreateRoomModal()} >Tạo phòng mới</Button>
+                <Input style={{marginLeft:'30px',marginRight:'10px'}} placeholder="Nhập ID phòng" onChange={handleIdJoinRoomChange}></Input> 
+                <Button variant="contained"  onClick={() => joinRoomById()} >Tham gia</Button>
               </div>
               <Grid container >
                 <Grid item xs={12}>
