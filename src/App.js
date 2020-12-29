@@ -6,7 +6,8 @@ import Home from './pages/Home';
 import ActiveAccount from './pages/ActiveAccount';
 import ForgetPassword from './pages/ForgetPassword';
 import {BrowserRouter as Router,  Switch,  Route} from "react-router-dom";
-import React, { useState, useEffect} from 'react'
+import React from 'react'
+import HistoryBox from './components/HistoryBox';
 function App() {
   
   return(
@@ -26,6 +27,9 @@ function App() {
           </Route>
           <Route path="/forget-password">
             <ForgetPassword/>
+          </Route>
+          <Route path="/htr">
+            <HistoryBox/>
           </Route>
           <Route path="/">
             <Home/>

@@ -98,7 +98,6 @@ export default function Dashboard(props) {
   const [idJoinRoom, setIdJoinRoom] = useState('')
   const [isFindQuickGame,setIsFindQuickGame] = useState(false);
 
-  console.log(playRooms);
   const handleNewRoomTypeChange = (event) => {
     setNewRoomType(event.target.value);
   };
@@ -301,7 +300,7 @@ export default function Dashboard(props) {
                       <CardContent style={{textAlign: 'left'}}>
                       <h2>List Users Online</h2>
                       {usersOnline.map(item =>
-                            <li key={item.userId}><span>{item.userName}</span></li>
+                            <li key={item.userId}><Button href={'/user/'+item.userId} size="small" style={{textTransform: 'none'}}>{item.userName}</Button></li>
                       )}
                       </CardContent>
                     </Card>
@@ -391,6 +390,9 @@ export default function Dashboard(props) {
                     </div>
                   </Modal>
                 </div>
+                <Button href="/topPlayers" >
+                  Button Top Players
+                </Button>
             </div>
           }
     </div>

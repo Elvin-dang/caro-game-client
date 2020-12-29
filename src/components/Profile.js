@@ -4,7 +4,8 @@ import { Redirect } from 'react-router-dom';
 import { Paper, Button, Avatar, Box, CssBaseline, Grid, Typography, Container, TextField } from '@material-ui/core';
 import userApi from '../api/userApi';
 import AvatarEdit from 'react-avatar-edit';
-
+import InfomationBox from './InfomationBox';
+import swal from 'sweetalert';
 const useStyles = makeStyles((theme) => ({
 	paper: {
 		display: 'flex',
@@ -13,9 +14,12 @@ const useStyles = makeStyles((theme) => ({
 	infomation: {
 		display: 'flex',
 		padding: theme.spacing(2),
-	}
+	},
+	marginTop: {
+		marginTop: '20px',
+	  },
 }));
-export default function Profile(props) { 
+export default function Profile() { 
 	const classes = useStyles(); 
 	const [user, setUser] = useState({ name: "", password: ""});
 	const [curUser, setCurUser] = useState(JSON.parse(localStorage.getItem('curUser')));
@@ -51,7 +55,7 @@ export default function Profile(props) {
 
 	const onBeforeFileLoad = (elem) => {
 		if(elem.target.files[0].size > 71680){
-			alert("File is too big!");
+			swal("Lỗi", "Kích thước ảnh lớn!", "error");
 			elem.target.value = "";
 		};
 	}
@@ -71,38 +75,7 @@ export default function Profile(props) {
 	        	<Container >
 	        		<Grid container spacing={1} >
 	        			<Grid item xs={3} >
-	        				<Box bgcolor="info.main" height={750}>
-	        					<Paper class={classes.paper}>
-			        				<Box display="flex" justifyContent="center" p={3} >
-										<Avatar alt="avatar" src={curUser.avatar} />
-			        				</Box>
-			        				<Box display="flex" justifyContent="left" m={1} p={1} >
-										<h2>{curUser.name}</h2>
-									</Box>
-								</Paper>
-								<Paper class={classes.infomation}>
-			        				<Grid  container spacing={1} >
-			        					<Grid item xs={12}>
-			        						<h4>Email: {curUser.email}</h4>
-			        					</Grid>
-			        					<Grid item xs={12}>
-			        						<h4>Email: {curUser.email}</h4>
-			        					</Grid>
-			        					<Grid item xs={12}>
-			        						<h4>Email: {curUser.email}</h4>
-			        					</Grid>
-			        					<Grid item xs={12}>
-			        						<h4>Email: {curUser.email}</h4>
-			        					</Grid>
-			        					<Grid item xs={12}>
-			        						<h4>Email: {curUser.email}</h4>
-			        					</Grid>
-			        					<Grid item xs={12}>
-			        						<h4>Email: {curUser.email}</h4>	
-			        					</Grid>
-			        				</Grid>
-								</Paper>
-							</Box>
+							<InfomationBox user={curUser}/>
 	        			</Grid>
 	        			<Grid item xs={9}>
 	        				<Box bgcolor="#e0e0e0" height={750}>
@@ -113,15 +86,27 @@ export default function Profile(props) {
 								</Box>
 	        					<Box display="flex" justifyContent="left" px={5} >
 	        						<Grid  container spacing={3} >
-		        						<Grid item xs={12}>
-											<TextField variant="outlined" margin="normal" required fullWidth id="name" label="New name" name="name" 
-												onChange={e => setUser({ ...user, name: e.target.value})} />
-											<Button onClick={handleChangeName} fullWidth variant="contained" color="primary" >Change name</Button>
+										<Grid item xs={12}>
+											<Grid  container spacing={3} >
+												<Grid item xs={8}>
+													<TextField variant="outlined" margin="normal" required fullWidth id="name" label="New name" name="name" 
+														onChange={e => setUser({ ...user, name: e.target.value})} />
+												</Grid>
+												<Grid item xs={4}>
+													<Button className={classes.marginTop}  onClick={handleChangeName} fullWidth variant="contained" color="primary" >Change name</Button>
+												</Grid>
+											</Grid>
 										</Grid>
 										<Grid item xs={12}>
-											<TextField variant="outlined" margin="normal" required fullWidth name="password" label="New password" type="password" id="password"
-												onChange={e => setUser({ ...user, password: e.target.value})} />
-											<Button onCLick={handleChangePassword} fullWidth variant="contained" color="primary" >Change Password</Button>
+											<Grid  container spacing={3} >
+												<Grid item xs={8}>
+													<TextField variant="outlined" margin="normal" required fullWidth name="password" label="New password" type="password" id="password"
+														onChange={e => setUser({ ...user, password: e.target.value})} />
+												</Grid>
+												<Grid item xs={4}>
+													<Button className={classes.marginTop} onCLick={handleChangePassword} fullWidth variant="contained" color="primary" >Change Password</Button>
+												</Grid>
+											</Grid>
 										</Grid>
 										<Grid item xs={6}>
 											<AvatarEdit
