@@ -323,6 +323,9 @@ export default function Dashboard(props) {
                     </div>
                   </Modal>
                 </div>
+                <Button href="/topPlayers" >
+                  Button Top Players
+                </Button>
             </div>
           }
     </div>

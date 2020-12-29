@@ -9,10 +9,9 @@ import {useParams} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
 }));
-const history = [];
 
 export default function AnotherProfile() { 
-	const [resUser, setResUser] = useState({avatar:null, email:"", elo:0, date:"", rank:"", game:{win:0, lose:0, total:0}});
+	const [resUser, setResUser] = useState({_id:"", avatar:null, email:"", elo:0, date:"", rank:"", game:{win:0, lose:0, total:0}, history:[]});
 	const classes = useStyles();
 	const { id } = useParams();
 	
@@ -25,7 +24,6 @@ export default function AnotherProfile() {
 
             }
         }
-
         fetchUser();
 	}, []);
 	return (<div>{ resUser===null && (<Redirect to='/signin' />) }
@@ -52,7 +50,7 @@ export default function AnotherProfile() {
 										Match history
 									</Typography>
                                 </Box>
-                                <HistoryBox matchHistory={history}/>
+                                <HistoryBox history={resUser.history} userId={resUser._id}/>
 	        				</Box>
 	        			</Grid>
 	        		</Grid>

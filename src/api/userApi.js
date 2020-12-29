@@ -50,5 +50,9 @@ const userApi = {
         const url = `user/profile`;
         return axiosClient.patch(url, user);
     },
+    getTopPlayers: ()=> {
+        const url = `user/topPlayers`;
+        return axiosClient.get(url);
+    }
 };
 export default userApi;

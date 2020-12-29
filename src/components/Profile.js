@@ -5,7 +5,7 @@ import { Paper, Button, Avatar, Box, CssBaseline, Grid, Typography, Container, T
 import userApi from '../api/userApi';
 import AvatarEdit from 'react-avatar-edit';
 import InfomationBox from './InfomationBox';
-
+import swal from 'sweetalert';
 const useStyles = makeStyles((theme) => ({
 	paper: {
 		display: 'flex',
@@ -55,7 +55,7 @@ export default function Profile() {
 
 	const onBeforeFileLoad = (elem) => {
 		if(elem.target.files[0].size > 71680){
-			alert("File is too big!");
+			swal("Lỗi", "Kích thước ảnh lớn!", "error");
 			elem.target.value = "";
 		};
 	}

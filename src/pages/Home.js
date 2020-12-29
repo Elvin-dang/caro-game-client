@@ -7,8 +7,9 @@ import Room from '../components/Room';
 import MessageList from '../components/MessageList';
 import Profile from '../components/Profile';
 import AnotherProfile from '../components/AnotherProfile';
+import TopPlayer from '../pages/TopPlayer'
 function Home() {
-	const socket = io.connect(process.env.REACT_APP_test_api_domain_withoutAPI,
+	const socket = io.connect(process.env.REACT_APP_api_domain_withoutAPI,
 		{
 			transports: ['websocket'], 
 			upgrade: false
@@ -32,6 +33,9 @@ function Home() {
 						</Route>
 						<Route path="/user/:id">
 							<AnotherProfile />
+						</Route>
+						<Route path="/topPlayers">
+							<TopPlayer />
 						</Route>
 						<Route path="/profile">
 							<Profile />
