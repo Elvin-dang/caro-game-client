@@ -6,7 +6,6 @@ import swal from 'sweetalert';
 import CaroGame from './CaroGame';
 import MessageRoom from '../components/MessageRoom';
 import { RoomOutlined } from '@material-ui/icons';
-import swal from 'sweetalert';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
