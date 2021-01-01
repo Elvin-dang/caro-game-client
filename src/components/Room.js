@@ -269,10 +269,12 @@ export default function Room(props) {
             invitableUsers[a].invited = false;
         }
         setUsersOnline(invitableUsers);
+        console.log(usersOnline);
         setOpenInviteDialog(true);
-      };
+    };
+
     const handleCloseInviteDialog = () => {
-    setOpenInviteDialog(false);
+        setOpenInviteDialog(false);
     };
     
     const handleClickInvitePlayer = (invitedPlayer) =>{
@@ -285,8 +287,10 @@ export default function Room(props) {
                 invitableUsers[a] = invitedPlayer;
             }
         }
+        invitableUsers = invitableUsers.concat({"socketId":"","userId":curUser._id,"userName":"","invited":false});
         setUsersOnline(invitableUsers);
-        console.log(invitedPlayer);
+        console.log(usersOnline);
+        console.log( invitedPlayer);
         socket.emit("invitePlayer", {"playerInviteName":curUser.name,"room":roomID,"invitePlayerId":invitedPlayer.userId});
     };
   
@@ -335,7 +339,7 @@ export default function Room(props) {
                         <DialogContent dividers>
                             <Typography gutterBottom>
                             {usersOnline.map(item => 
-                                item.userId !== curUser._id ?
+                                item.userId !== curUser._id && item.canInvite !== false ?
                                 <div key={item.userId}>
                                     <li >
                                         <span>{item.userName}
