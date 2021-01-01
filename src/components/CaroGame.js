@@ -114,7 +114,6 @@ const CaroGame = ({ socket, isStart, room }) => {
         
         if(calculateWinner(squares)) 
         {
-            console.log("send request");
             socket.emit("gameResult", {
                 room: {
                     ...room,

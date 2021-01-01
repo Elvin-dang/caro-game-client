@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import {Card,CardContent,Table,TableBody ,TableCell ,TableContainer ,TableHead ,Paper ,TableRow ,
 TablePagination, Grid, Button,Modal,Input, CardActions } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
@@ -26,8 +26,30 @@ const styles = (theme) => ({
     right: theme.spacing(1),
     top: theme.spacing(1),
     color: theme.palette.grey[500],
-  },
+  }
 });
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    position: 'absolute',
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
+
+function getModalStyle() {
+  const top = 50;
+  const left = 50;
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  };
+}
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -84,7 +106,9 @@ export default function Dashboard(props) {
   const isLoggedIn = props.isLogin;
   const socket = props.socket;
   const curUser = JSON.parse(localStorage.getItem('curUser'));
+  const classes = useStyles();
   
+  const [modalStyle] = useState(getModalStyle);
   const [openCreateRoomModal, setOpenCreateRoomModal] = useState(false);
   const [openJoinRoomModal, setOpenJoinRoomModal] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -344,42 +368,40 @@ export default function Dashboard(props) {
                   </DialogTitle>
                   <DialogContent dividers>
                     <Typography gutterBottom>
-                      Room: {roomDialog.roomId}
+                      <p style={{fontWeight: 'bold', display: 'inline'}}>Room:</p> {roomDialog.roomId}
                     </Typography>
                     <Typography gutterBottom>
-                      Người tạo: {roomDialog.hostName}
+                      <p style={{fontWeight: 'bold', display: 'inline'}}>Người tạo:</p>  {roomDialog.hostName}
                     </Typography>
                     <Typography gutterBottom>
-                      Trạng thái: {roomDialog.status === 0 ? 'đang chơi' : 'đã chơi'}
+                      <p style={{fontWeight: 'bold', display: 'inline'}}>Trạng thái:</p>  {roomDialog.status === 0 ? 'đang chờ' : 'đã chơi'}
                     </Typography>
                     <Typography gutterBottom>
-                      Loại phòng: {roomDialog.type}
+                      <p style={{fontWeight: 'bold', display: 'inline'}}>Loại phòng:</p>  {roomDialog.type === 'unlock' ? 'không khóa' : 'khóa'}
                     </Typography>
                     <Typography gutterBottom>
-                      Player 1: {roomDialogPlayer1.name === null ? 'chưa vào' : roomDialogPlayer1.name}
+                      <p style={{fontWeight: 'bold', display: 'inline'}}>Player 1:</p>  {roomDialogPlayer1.name === null ? 'chưa vào' : roomDialogPlayer1.name}
                     </Typography>
                     <Typography gutterBottom>
-                      Player 2: {roomDialogPlayer2.name === null ? 'chưa vào' : roomDialogPlayer2.name}
+                      <p style={{fontWeight: 'bold', display: 'inline'}}>Player 2:</p>  {roomDialogPlayer2.name === null ? 'chưa vào' : roomDialogPlayer2.name}
                     </Typography>
                   </DialogContent>
                   <DialogActions>
                     <Button autoFocus onClick={handleCloseDialog} color="primary">
-                      Close
+                      Đóng
                     </Button>
                   </DialogActions>
                 </Dialog>
 
 
                 {/* Create New Room Modal */}
-                <div>
                   <Modal
                     open={openCreateRoomModal}
                     onClose={handleCloseCreateRoomModal}
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
-                    style={{paddingLeft:"30%",paddingTop:'20px'}}
                   >
-                    <div style={{backgroundColor:'white',width:'400px',height:'auto',padding:'20px'}}>
+                    <div  style={modalStyle} className={classes.paper}>
                       <h2 >Tạo phòng chơi mới</h2>
                       <p >
                         Vui lòng chọn loại phòng chơi muốn tạo:
@@ -402,7 +424,6 @@ export default function Dashboard(props) {
                       </div>
                     </div>
                   </Modal>
-                </div>
 
 
                 {/* Join Room Modal */}

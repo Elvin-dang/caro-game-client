@@ -17,7 +17,7 @@ export default function MessageItem(props) {
         <Paper className={classes.paper}>
             <Grid container wrap="nowrap" spacing={2}>
                 <Grid item>
-                    <Avatar>{message.name.charAt(0)}</Avatar>
+                    <Avatar alt="avatar" src={message.avatar}></Avatar>
                 </Grid>
                 <Grid item>
                     <b>{message.name}</b>

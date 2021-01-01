@@ -23,7 +23,11 @@ export default function MessageRoom(props) {
     }
     useEffect(()=>{
         socket.on('server-chat-room',response => {
-            setMessages(draft => [ ...draft, {name: response.name, message:response.message}])
+            setMessages(draft => [ ...draft, {
+                name: response.name, 
+                message: response.message, 
+                avatar: response.avatar
+            }]);
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         });
         }, []);
