@@ -93,15 +93,20 @@ export default function Dashboard(props) {
   const [roomDialogPlayer2,setRoomDialogPlayer2] = useState({});
   const [newRoomType,setNewRoomType] = useState('unlock');
   const [newRoomPassword,setNewRoomPassword] = useState('');
+  const [newRoomTimePerRound,setNewRoomTimePerRound] = useState('50');
   const [joinRoomPassword,setJoinRoomPassword] = useState('');
   const [roomSelected,setRoomSelected] = useState({});
   const [idJoinRoom, setIdJoinRoom] = useState('')
   const [isFindQuickGame,setIsFindQuickGame] = useState(false);
-
+  const [isAcceptInvite,setIsAcceptInvite] = useState({"isaccept":false,"room":null});
   const handleNewRoomTypeChange = (event) => {
     setNewRoomType(event.target.value);
   };
 
+  const handleNewRoomTimePerRoundChange = (event) => {
+    setNewRoomTimePerRound(event.target.value);
+  };
+  console.log(newRoomTimePerRound);
   const handleNewRoomPasswordChange = (event) => {
     setNewRoomPassword(event.target.value);
   }
@@ -126,6 +131,9 @@ export default function Dashboard(props) {
 
   const handleOpenCreateRoomModal= () => {
     setOpenCreateRoomModal(true);
+    setNewRoomPassword('');
+    setNewRoomType('unlock');
+    setNewRoomTimePerRound('50');
   }
 
   const handleCloseCreateRoomModal= () => {
@@ -153,6 +161,7 @@ export default function Dashboard(props) {
       }); 
     }
   }
+
   useEffect(()=>{
     socket.on('updateUsersOnlineList', (response) => setUsersOnline(response)); 
     socket.on('updateRoomsList',  (response) => setPlayRooms(response));
@@ -164,21 +173,19 @@ export default function Dashboard(props) {
           title: "Bạn nhận được lời mời?",
           text: "Người chơi " + response.playerInviteName + " mời bạn vào room " + response.room + "!",
           icon: "warning",
-          buttons: true,
+          buttons: {
+            cancel: "Từ chối",
+            catch: {
+              text: "Chấp nhận",
+              value: "accept",
+            }},
           dangerMode: false,
         })
-        .then((accept) => {
-          if (accept) {
-            for (let a=0; a < playRooms.length; a++) {
-              if (playRooms[a].roomId == response.room) {
-                console.log('accept invited');
-                joinRoom(playRooms[a].roomId,playRooms[a].type,playRooms[a].password)
-                break;
-              }
-            }
-          }
-          else {
-          }
+        .then((value) => {
+          if(value === "accept")
+          {
+            setIsAcceptInvite({"isaccept":true,"room":response.room});
+          }     
         });
       }});
     socket.on('findedQuickGame',  (response) => {
@@ -192,8 +199,8 @@ export default function Dashboard(props) {
   }, []);
   
   const createRoom = () => {
-    socket.emit("createRoom", {'hostName':curUser.name,'newRoomType':newRoomType,'newRoomPassword':newRoomPassword,'newRoomTimePerRound':0});
-    socket.emit("joinRoom", playRooms.length + 1);
+    socket.emit("createRoom", {'hostName':curUser.name,'newRoomType':newRoomType,'newRoomPassword':newRoomPassword,'newRoomTimePerRound':newRoomTimePerRound});
+    socket.emit("joinRoom",  {"roomId":(playRooms.length + 1),"playerId":curUser._id});
     const path = "room/" + (playRooms.length + 1);
     history.push(path);
   }
@@ -201,7 +208,7 @@ export default function Dashboard(props) {
   const joinRoom = (id,roomType,roomPassword) => {
     if(roomType === 'unlock')
     {
-      socket.emit("joinRoom", id);
+      socket.emit("joinRoom", {"roomId":id,"playerId":curUser._id});
       const path = "room/" + id;
       history.push(path);
     }
@@ -253,6 +260,20 @@ export default function Dashboard(props) {
       setIsFindQuickGame(false);
       socket.emit("outQuickGame", {"id":curUser._id});
     });
+  }
+
+  if(isAcceptInvite.isaccept === true)
+  {
+    for (let a=0; a < playRooms.length; a++) {
+      if (playRooms[a].roomId == isAcceptInvite.room) {
+        console.log('accept invited');
+        joinRoom(playRooms[a].roomId,playRooms[a].type,playRooms[a].password);
+
+        break;
+      }
+    }
+    setIsAcceptInvite({"isaccept":false,"room":null});
+
   }
 
   return (
@@ -358,7 +379,7 @@ export default function Dashboard(props) {
                     aria-describedby="simple-modal-description"
                     style={{paddingLeft:"30%",paddingTop:'20px'}}
                   >
-                    <div style={{backgroundColor:'white',width:'400px',height:'300px',padding:'20px'}}>
+                    <div style={{backgroundColor:'white',width:'400px',height:'auto',padding:'20px'}}>
                       <h2 >Tạo phòng chơi mới</h2>
                       <p >
                         Vui lòng chọn loại phòng chơi muốn tạo:
@@ -369,6 +390,14 @@ export default function Dashboard(props) {
                       </RadioGroup>
                       <Input placeholder="Nhập password" onChange={handleNewRoomPasswordChange}></Input> 
                       <div style={{alignItems: 'center'}}>
+                      <p >
+                        Vui lòng chọn thời gian giới hạn mỗi lượt:
+                      </p>
+                      <RadioGroup aria-label="gender" name="gender2" value={newRoomTimePerRound} onChange={handleNewRoomTimePerRoundChange}>
+                        <FormControlLabel value="50" control={<Radio />} label="50s" />
+                        <FormControlLabel value="100" control={<Radio />} label="100s" />
+                        <FormControlLabel value="150" control={<Radio />} label="150s" />
+                      </RadioGroup>
                       <Button variant="contained" color="primary" onClick={() => createRoom()} style={{margin:'10px'}}>Tạo phòng</Button>
                       </div>
                     </div>
@@ -385,7 +414,7 @@ export default function Dashboard(props) {
                     aria-describedby="simple-modal-description"
                     style={{paddingLeft:"30%",paddingTop:'20px'}}
                   >
-                    <div style={{backgroundColor:'white',width:'400px',height:'300px',padding:'20px'}}>
+                    <div style={{backgroundColor:'white',padding:'20px'}}>
                       <h2 >Tham gia phòng</h2>
                       <p >
                         Vui lòng nhập mật khẩu phòng:
