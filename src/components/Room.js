@@ -1,7 +1,7 @@
 import React,{ useState, useEffect} from 'react';
 import { useParams } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import {Card, CardContent, Grid, Link, Button,Paper, Box} from '@material-ui/core';
+import {Card, CardContent, Grid, Link, Button,Paper, Box, CardHeader, CardActions} from '@material-ui/core';
 import swal from 'sweetalert';
 import CaroGame from './CaroGame';
 import MessageRoom from '../components/MessageRoom';
@@ -300,26 +300,43 @@ export default function Room(props) {
                         <Grid item xs={1}/>
                         <Grid item xs={10}>
                             <Grid container spacing={5}>
-                                <Grid item xs={12} md={8}>
+                                <Grid item xs={12} md={7}>
                                     <Grid container justify='center'>
                                         <CaroGame isStart={isMyTurn()} room={room} socket={socket}/>
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={12} md={4}>
-                                    <Card variant="outlined" style={{backgroundColor: room.nextTurn === 1 ? 'red' : 'white'}}>
-                                        <CardContent>
-                                            <h3>Người chơi (X): {room.player1.name ? room.player1.name : <Button onClick={() => joinPlayer(1)} style={{margin:'15px'}} variant="contained">Tham gia</Button>}</h3>
-                                        </CardContent>
-                                    </Card>
-                                    <Card variant="outlined" style={{backgroundColor: room.nextTurn === 2 ? 'red' : 'white', marginTop: '10px', marginBottom: '15px'}}>
-                                        <CardContent>
-                                            <h3>Người chơi (O): {room.player2.name ? room.player2.name : <Button onClick={() => joinPlayer(2)} style={{margin:'15px'}} variant="contained">Tham gia</Button>}</h3>
-                                        </CardContent>
-                                    </Card>
+                                <Grid item xs={12} md={5}>
+                                    <Grid container direction='row' style={{marginBottom: '20px'}}>
+                                        <Card style={{borderRadius: '20px', width:'45%'}}>
+                                            <CardHeader 
+                                                style={{backgroundColor: room.nextTurn === 1 ? 'red' : 'gray', textAlign: 'center'}}
+                                                title="Người chơi (X)"
+                                            />
+                                            <CardContent>
+                                                <Typography variant="h5" component="h4" style={{textAlign: 'center'}}>{room.player1.name ? room.player1.name : "Trống"}</Typography>
+                                            </CardContent>
+                                            <CardActions>
+                                                <Button onClick={() => joinPlayer(1)} size="small" color="primary" fullWidth disabled={room.player1.name ? true : false}>Tham gia</Button>
+                                            </CardActions>
+                                        </Card>
+                                        <Card style={{borderRadius: '20px', width:'45%', marginLeft: '9%'}}>
+                                            <CardHeader 
+                                                style={{backgroundColor: room.nextTurn === 2 ? 'red' : 'gray', textAlign: 'center'}}
+                                                title="Người chơi (O)"
+                                            />
+                                            <CardContent>
+                                                <Typography variant="h5" component="h4" style={{textAlign: 'center'}}>{room.player2.name ? room.player2.name : "Trống"}</Typography>
+                                            </CardContent>
+                                            <CardActions>
+                                                <Button onClick={() => joinPlayer(2)} size="small" color="primary" fullWidth disabled={room.player2.name ? true : false}>Tham gia</Button>
+                                            </CardActions>
+                                        </Card>
+                                    </Grid>
                                     <Grid container direction="row" style={{marginBottom:'30px'}} justify="center" >
                                         <Button onClick={() => room.status === 0 ? handlePlay() : handleDefeat()} variant="contained" color="primary">{room.status === 0 ? "Bẳt đầu" : "Đầu hàng"}</Button>
                                         <Button onClick={() => leavePlayer()} style={{marginLeft:'30px'}} variant="contained" color="secondary" disabled={room.status === 0 ? false : true}>Làm khán giả</Button>
-                                        <Button onClick={() => handleClickOpenInviteDialog()} style={{marginBottom:'30px', display: 'block'}} variant="contained" >Mời</Button>
+                                        <Button onClick={() => handleClickOpenInviteDialog()} style={{marginLeft:'30px', backgroundColor: '#5beb6f'}} variant="contained">Mời</Button>
+                                        <Button onClick={() => null} style={{marginLeft:'30px'}} variant="contained">Thoát phòng</Button>
                                     </Grid>
                                     <MessageRoom socket={socket} room={room}/>
                                 </Grid>

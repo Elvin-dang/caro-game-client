@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {Card, AppBar, Button, Toolbar, Typography, IconButton, MenuItem, Menu, Link } from '@material-ui/core';
+import {Card, AppBar, Button, Toolbar, Typography, IconButton, MenuItem, Menu } from '@material-ui/core';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
@@ -10,6 +10,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import io from 'socket.io-client'
 import userApi from '../api/userApi';
 import { makeStyles } from '@material-ui/core/styles';
+import { Link } from 'react-router-dom';
 
 const useStyle = makeStyles((theme) => ({
   bottom_space: {
@@ -74,9 +75,11 @@ export default function TopBar(props) {
     <div className="root">
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" className="menuButton" color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
+          <Link href='/'>
+            <IconButton edge="start" className="menuButton" color="inherit" aria-label="menu">
+              <MenuIcon />
+            </IconButton>
+          </Link>
           <Typography variant="h6" className="title">
             Hello {!isLoggedIn ? <Button href="/signin" color="inherit">Login</Button>: name}
           </Typography>
@@ -100,10 +103,10 @@ export default function TopBar(props) {
                   <Paper>
                       <ClickAwayListener onClickAway={handleClose}>
                       <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                          <Link href='/profile' className={classes.linkProfile}>
+                          <Link to='/profile' className={classes.linkProfile}>
                               <MenuItem onClick={handleClose}>Profile</MenuItem>
                           </Link>
-                          <Link href='/signout' className={classes.linkProfile}>
+                          <Link to='/signout' className={classes.linkProfile}>
                               <MenuItem onClick={handleClose}>Sign out</MenuItem>
                           </Link>
                       </MenuList>

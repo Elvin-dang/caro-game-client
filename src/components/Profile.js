@@ -67,7 +67,7 @@ export default function Profile() {
 	        <div>
 	          <Container maxWidth="sm">
 	            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-	              Profile
+	              Thông tin cá nhân
 	            </Typography>
 	          </Container>
 	        </div>

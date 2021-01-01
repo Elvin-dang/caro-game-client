@@ -33,7 +33,7 @@ export default function AnotherProfile() {
 	        <div>
 	          <Container maxWidth="sm">
 	            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-	              Profile
+	              Thông tin người chơi
 	            </Typography>
 	          </Container>
 	        </div>

@@ -1,7 +1,7 @@
 import React,{useState, useEffect} from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import {Card,CardContent,Table,TableBody ,TableCell ,TableContainer ,TableHead ,Paper ,TableRow ,
-TablePagination, Grid, Link, Button,Modal,Input } from '@material-ui/core';
+TablePagination, Grid, Button,Modal,Input, CardActions } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
@@ -9,7 +9,7 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import { Redirect, useHistory} from 'react-router-dom';
+import { Redirect, useHistory, Link} from 'react-router-dom';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -303,6 +303,13 @@ export default function Dashboard(props) {
                             <li key={item.userId}><Button href={'/user/'+item.userId} size="small" style={{textTransform: 'none'}}>{item.userName}</Button></li>
                       )}
                       </CardContent>
+                      <CardActions>
+                        <Link to='/topPlayers' style={{textDecoration: 'none', color: '#f50057', width: '100%'}}>
+                          <Button fullWidth color="secondary">
+                              Bảng xếp hạng
+                          </Button>
+                        </Link>
+                      </CardActions>
                     </Card>
                     </Grid>
                   </Grid>
@@ -390,9 +397,6 @@ export default function Dashboard(props) {
                     </div>
                   </Modal>
                 </div>
-                <Button href="/topPlayers" >
-                  Button Top Players
-                </Button>
             </div>
           }
     </div>
