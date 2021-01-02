@@ -349,11 +349,9 @@ export default function Dashboard(props) {
                       )}
                       </CardContent>
                       <CardActions>
-                        <Link to='/topPlayers' style={{textDecoration: 'none', color: '#f50057', width: '100%'}}>
-                          <Button fullWidth color="secondary">
+                          <Button href='/topPlayers' fullWidth color="secondary">
                               Bảng xếp hạng
                           </Button>
-                        </Link>
                       </CardActions>
                     </Card>
                     </Grid>

@@ -13,7 +13,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HistoryBox(props) { 
     const { history, userId } = props;
-	const classes = useStyles();
+    const classes = useStyles();
+    
+    if(history.length === 0) return <Typography align="center" variant="h4">Chưa có trận đấu nào</Typography>
 
 	return (
         <GridList cellHeight={100} className={classes.gridList} cols={1} >

@@ -42,7 +42,7 @@ export default function Profile() {
     const handleChangeName = async () =>{
     	if(user.name !== "")
     	{
-    		const response = await userApi.updateUser({ email: curUser.email, name: user.name });
+    		const response = await userApi.updateUser({ email: curUser.email, name: user.name, accessType: curUser.accessType });
 	    	setCurUser({ ...curUser, name: user.name});
 			localStorage.setItem('curUser', JSON.stringify({ ...curUser, name: user.name}));
 			if(response.msg === "Update successfully!") swal("Cập nhập tên thành công", "", "success");
@@ -54,7 +54,7 @@ export default function Profile() {
 		if(user.password !== "")
 		{
 			if(user.password.length < 6) swal("Mật khẩu cần tối thiểu 6 ký tự", "", "warning");
-			const response = await userApi.updateUser({ email: curUser.email, password: user.password });
+			const response = await userApi.updateUser({ email: curUser.email, password: user.password, accessType: curUser.accessType });
 			if(response.msg === "Update successfully!") swal("Cập nhập mật khẩu thành công", "", "success");
 			else swal("Cập nhâp mật khẩu thất bại", "", "error");
     	}
@@ -62,7 +62,7 @@ export default function Profile() {
     const handleUploadAvatar = async ()=>{
     	await setCurUser({ ...curUser, avatar: avatar});
     	await localStorage.setItem('curUser', JSON.stringify({ ...curUser, avatar: avatar}));
-		const response = await userApi.updateUser({ email: curUser.email, avatar: avatar });
+		const response = await userApi.updateUser({ email: curUser.email, avatar: avatar, accessType: curUser.accessType });
     	setAvatar(null);
     	setImageSource(null);
     }

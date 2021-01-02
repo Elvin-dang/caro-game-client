@@ -1,7 +1,7 @@
 import React,{ useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Redirect } from 'react-router-dom';
-import { Paper, Button, Avatar, Box, CssBaseline, Grid, Typography, Container, TextField, IconButton } from '@material-ui/core';
+import { Paper, Button, Avatar, Box, CssBaseline, Grid, Typography, Container, TextField, IconButton, LinearProgress } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import InfomationBox from './InfomationBox';
 import HistoryBox from './HistoryBox';
@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AnotherProfile() { 
 	const [resUser, setResUser] = useState({_id:"", avatar:null, email:"", elo:0, date:"", rank:"", game:{win:0, lose:0, total:0}, history:[]});
+	const [isLoading, setIsLoading] = useState(true);
 	const classes = useStyles();
 	const { id } = useParams();
 	
@@ -21,12 +22,16 @@ export default function AnotherProfile() {
             try {
                 const response = await userApi.getUser(id);
 				setResUser(response);
+				setIsLoading(false);
             } catch(err) {
 
             }
         }
         fetchUser();
 	}, []);
+	
+	if(isLoading) return <LinearProgress/>;
+
 	return (<div>{ resUser===null && (<Redirect to='/signin' />) }
 		<CssBaseline />
     	<main>

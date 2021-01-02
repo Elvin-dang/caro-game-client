@@ -1,7 +1,7 @@
 import React,{ useState } from 'react';
 import Moment from 'react-moment';
 import { makeStyles } from '@material-ui/core/styles';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import { Card, Button, Grid, Typography, Container, CardContent, CardActions, CardHeader } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
@@ -28,11 +28,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function HistoryItem(props) { 
+export default function HistoryItem(props) {
     const { item, index, userId } = props;
     const classes = useStyles();
-    const curUser = JSON.parse(localStorage.getItem('curUser'));
-    const playerPosition = curUser._id === item.player1.id ? 1 : 2;
+    const playerPosition = userId === item.player1.id ? 1 : 2;
     let matchResult = 0; // 0 hòa - 1 win - 2 thua
 
     if(item.winner === 0) matchResult = 0;
@@ -71,12 +70,17 @@ export default function HistoryItem(props) {
                             </Grid>
                             <Grid item xs={4}>
                                 <Typography align="center" variant="h6">Số nước đi</Typography>
-                                <Typography align="center">{item.move.length}</Typography>
+                                <Typography align="center">{item.move[0] ? item.move[0].history.length - 1 : "0"}</Typography>
                             </Grid>
                         </Grid>
                     </CardContent>
                     <CardActions>
-                        <Button fullWidth style={{backgroundColor: '#8c898a'}} variant="contained">Chi tiết</Button>
+                        <Link to= {{
+                            pathname: `/history/${item._id}`,
+                            game: item
+                        }} style={{width: '100%', textDecoration:'none'}}>
+                            <Button fullWidth style={{backgroundColor: '#8c898a'}} variant="contained">Chi tiết</Button>
+                        </Link>
                     </CardActions>
                 </Card>
             )
@@ -111,12 +115,17 @@ export default function HistoryItem(props) {
                             </Grid>
                             <Grid item xs={4}>
                                 <Typography align="center" variant="h6">Số nước đi</Typography>
-                                <Typography align="center">{item.move.length}</Typography>
+                                <Typography align="center">{item.move[0] ? item.move[0].history.length - 1 : "0"}</Typography>
                             </Grid>
                         </Grid>
                     </CardContent>
                     <CardActions>
-                        <Button fullWidth style={{backgroundColor: '#2bba64'}} variant="contained">Chi tiết</Button>
+                        <Link to= {{
+                                pathname: `/history/${item._id}`,
+                                game: item
+                            }} style={{width: '100%', textDecoration:'none'}}>
+                            <Button fullWidth style={{backgroundColor: '#2bba64'}} variant="contained">Chi tiết</Button>
+                        </Link>
                     </CardActions>
                 </Card>
                 )
@@ -151,12 +160,17 @@ export default function HistoryItem(props) {
                             </Grid>
                             <Grid item xs={4}>
                                 <Typography align="center" variant="h6">Số nước đi</Typography>
-                                <Typography align="center">{item.move.length}</Typography>
+                                <Typography align="center">{item.move[0] ? item.move[0].history.length - 1 : "0"}</Typography>
                             </Grid>
                         </Grid>
                     </CardContent>
                     <CardActions>
-                        <Button fullWidth style={{backgroundColor: '#911332'}} variant="contained">Chi tiết</Button>
+                        <Link to= {{
+                                pathname: `/history/${item._id}`,
+                                game: item
+                            }} style={{width: '100%', textDecoration:'none'}}>
+                            <Button fullWidth style={{backgroundColor: '#911332'}} variant="contained">Chi tiết</Button>
+                        </Link>
                     </CardActions>
                 </Card>
                 )

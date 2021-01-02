@@ -10,6 +10,7 @@ import React from 'react'
 import HistoryBox from './components/HistoryBox';
 import Profile from './components/Profile';
 import AnotherProfile from './components/AnotherProfile';
+import CaroGameHistory from './components/CaroGameHistory';
 function App() {
   
   return(
@@ -30,14 +31,14 @@ function App() {
           <Route exact path="/forget-password">
             <ForgetPassword/>
           </Route>
-          <Route exact path="/htr">
-            <HistoryBox/>
-          </Route>
           <Route exact path="/profile">
             <Profile />
           </Route>
           <Route exact path="/user/:id">
             <AnotherProfile />
+          </Route>
+          <Route exact path="/history/:id">
+            <CaroGameHistory />
           </Route>
           <Route path="/">
             <Home/>

@@ -55,7 +55,7 @@ export default function Profile(props) {
                 </Grid>
                 <Grid item xs={12}>
                     <Typography variant="h6" style={{fontWeight: 'bold'}}>Tỉ lệ thắng:</Typography>
-                    <Typography variant="h6" gutterBottom>{(user.game.total==0 ? "0 %" : (Math.round(user.game.win * 100)/user.game.total).toFixed(2) + " %")}</Typography>
+                    <Typography variant="h6" gutterBottom>{(user.game.total === 0 ? "0 %" : (Math.round(user.game.win * 100)/user.game.total).toFixed(2) + " %")}</Typography>
                 </Grid>
                 <Grid item xs={12}>
                     <Typography variant="h6" style={{fontWeight: 'bold'}}>Tổng game đã chơi:</Typography>	
