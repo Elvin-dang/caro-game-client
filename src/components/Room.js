@@ -512,7 +512,11 @@ export default function Room(props) {
                                                 title="#Người chơi (X)"
                                             />
                                             <CardContent>
-                                                <Typography variant="h5" component="h4" style={{textAlign: 'center'}}>{room.player1.name ? room.player1.name : "Trống"}</Typography>
+                                                { room.player1.name ? 
+                                                <Typography variant="h5" component="h4" style={{textAlign: 'center', color: '#03fc4e'}}>{room.player1.name}</Typography>
+                                                :
+                                                <Typography variant="h5" component="h4" style={{textAlign: 'center'}}>Trống</Typography>
+                                                }
                                                 <CountDown id={1} isPlaying={handleTimer1()} duration={duration} onTimeEnd={handleOverTime} changeKey={changeKey}/>
                                             </CardContent>
                                             <CardActions>
@@ -525,7 +529,11 @@ export default function Room(props) {
                                                 title="#Người chơi (O)"
                                             />
                                             <CardContent>
-                                                <Typography variant="h5" component="h4" style={{textAlign: 'center'}}>{room.player2.name ? room.player2.name : "Trống"}</Typography>
+                                                { room.player2.name ? 
+                                                <Typography variant="h5" component="h4" style={{textAlign: 'center', color: '#03fc4e'}}>{room.player2.name}</Typography>
+                                                :
+                                                <Typography variant="h5" component="h4" style={{textAlign: 'center'}}>Trống</Typography>
+                                                }
                                                 <CountDown id={2} isPlaying={handleTimer2()} duration={duration} onTimeEnd={handleOverTime} changeKey={changeKey}/>
                                             </CardContent>
                                             <CardActions>

@@ -1,39 +1,168 @@
 import React,{ useState } from 'react';
+import Moment from 'react-moment';
 import { makeStyles } from '@material-ui/core/styles';
 import { Redirect } from 'react-router-dom';
-import { Paper, Button, Avatar, Box, CssBaseline, Grid, Typography, Container, TextField } from '@material-ui/core';
+import { Card, Button, Grid, Typography, Container, CardContent, CardActions, CardHeader } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     backgroundWin: {
         backgroundColor: 'cyan'
     },
-    center:{
-        marginLeft: '10px',
-    }
+    bold: {
+        fontWeight: 'bold'
+    },
+    cardItem_win: {
+        width: '100%',
+        marginBottom: '10px',
+        backgroundColor: '#3af082'
+    },
+    cardItem_lose: {
+        width: '100%',
+        marginBottom: '10px',
+        backgroundColor: '#ed2b5b'
+    },
+    cardItem_draw: {
+        width: '100%',
+        marginBottom: '10px',
+        backgroundColor: '#d1cdce'
+    },
 }));
 
 export default function HistoryItem(props) { 
-    const { item, userId } = props;
+    const { item, index, userId } = props;
     const classes = useStyles();
-    const isWin = ((item.winner==1 && item.player1._id==userId)||(item.winner==2 && item.player2._id==userId)) ? true : false;
-    return (<Grid item xs={12}>
-            <Paper className={isWin && classes.backgroundWin}>
-                <Grid  container >
-                    <Grid  item xs={2}>
-                        <h2 className={classes.center}>{isWin ? "Win" : "Lose"}</h2>
-                    </Grid>
-                    <Grid item xs={7}>
-                        <h4>X {item.player1.name}</h4>
-                        <h4>O {item.player2.name}</h4>
-                    </Grid>
-                    <Grid item xs={3}>
-                        <h4>10 moves</h4>
-                        <Typography align="right" variant="subtitle1" color="textSecondary">
-                        12/29/2020
-                    </Typography>
-                    </Grid>
-                </Grid>
-            </Paper>
-        </Grid>
-    )
+    const curUser = JSON.parse(localStorage.getItem('curUser'));
+    const playerPosition = curUser._id === item.player1.id ? 1 : 2;
+    let matchResult = 0; // 0 hòa - 1 win - 2 thua
+
+    if(item.winner === 0) matchResult = 0;
+    else if(playerPosition === item.winner) matchResult = 1;
+    else matchResult = 2;
+
+    switch(matchResult) {
+        case 0: 
+            return (
+                <Card className={classes.cardItem_draw} variant="outlined">
+                    <CardContent>
+                        <Typography align="left" variant="caption" gutterBottom>
+                            #{index + 1}
+                        </Typography>
+                        <Typography align="center" variant="h4" style={{color: '#8c898a'}} gutterBottom>
+                            Hòa
+                        </Typography>
+                        <Grid container>
+                            <Grid item xs={4}>
+                                <Typography align="center" variant="h6">Người chơi</Typography>
+                                <Typography align="center" className={playerPosition === 1 ? classes.bold : null}>Người chơi X: {item.player1.name}</Typography>
+                                <Typography align="center" className={playerPosition === 2 ? classes.bold : null}>Người chời O: {item.player2.name}</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography align="center" variant="h6">Thời gian</Typography>
+                                <Typography align="center">
+                                    <Moment format="hh:mm">
+                                        {item.date}
+                                    </Moment>
+                                </Typography>
+                                <Typography align="center">
+                                    <Moment format="DD/MM/YYYY">
+                                        {item.date}
+                                    </Moment>
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography align="center" variant="h6">Số nước đi</Typography>
+                                <Typography align="center">{item.move.length}</Typography>
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                    <CardActions>
+                        <Button fullWidth style={{backgroundColor: '#8c898a'}} variant="contained">Chi tiết</Button>
+                    </CardActions>
+                </Card>
+            )
+            case 1: 
+                return (
+                    <Card className={classes.cardItem_win} variant="outlined">
+                    <CardContent>
+                        <Typography align="left" variant="caption" gutterBottom>
+                            #{index + 1}
+                        </Typography>
+                        <Typography align="center" variant="h4" style={{color: '#2bba64' }} gutterBottom>
+                            Chiến thắng
+                        </Typography>
+                        <Grid container>
+                            <Grid item xs={4}>
+                                <Typography align="center" variant="h6">Người chơi</Typography>
+                                <Typography align="center" className={playerPosition === 1 ? classes.bold : null}>Người chơi X: {item.player1.name}</Typography>
+                                <Typography align="center" className={playerPosition === 2 ? classes.bold : null}>Người chời O: {item.player2.name}</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography align="center" variant="h6">Thời gian</Typography>
+                                <Typography align="center">
+                                    <Moment format="hh:mm">
+                                        {item.date}
+                                    </Moment>
+                                </Typography>
+                                <Typography align="center">
+                                    <Moment format="DD/MM/YYYY">
+                                        {item.date}
+                                    </Moment>
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography align="center" variant="h6">Số nước đi</Typography>
+                                <Typography align="center">{item.move.length}</Typography>
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                    <CardActions>
+                        <Button fullWidth style={{backgroundColor: '#2bba64'}} variant="contained">Chi tiết</Button>
+                    </CardActions>
+                </Card>
+                )
+            case 2: 
+                return (
+                    <Card className={classes.cardItem_lose} variant="outlined">
+                    <CardContent>
+                        <Typography align="left" variant="caption" gutterBottom>
+                            #{index + 1}
+                        </Typography>
+                        <Typography align="center" variant="h4" style={{color: '#911332'}} gutterBottom>
+                            Thua cuộc
+                        </Typography>
+                        <Grid container>
+                            <Grid item xs={4}>
+                                <Typography align="center" variant="h6">Người chơi</Typography>
+                                <Typography align="center" className={playerPosition === 1 ? classes.bold : null}>Người chơi X: {item.player1.name}</Typography>
+                                <Typography align="center" className={playerPosition === 2 ? classes.bold : null}>Người chời O: {item.player2.name}</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography align="center" variant="h6">Thời gian</Typography>
+                                <Typography align="center">
+                                    <Moment format="hh:mm">
+                                        {item.date}
+                                    </Moment>
+                                </Typography>
+                                <Typography align="center">
+                                    <Moment format="DD/MM/YYYY">
+                                        {item.date}
+                                    </Moment>
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography align="center" variant="h6">Số nước đi</Typography>
+                                <Typography align="center">{item.move.length}</Typography>
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                    <CardActions>
+                        <Button fullWidth style={{backgroundColor: '#911332'}} variant="contained">Chi tiết</Button>
+                    </CardActions>
+                </Card>
+                )
+        default: 
+            break;
+    }
+
+    return (<></>);
 }

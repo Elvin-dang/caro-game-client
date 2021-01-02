@@ -1,6 +1,7 @@
 import React from 'react';
+import Moment from 'react-moment';
 import { makeStyles } from '@material-ui/core/styles';
-import { Paper, Avatar, Box, Grid} from '@material-ui/core';
+import { Paper, Avatar, Box, Grid, Typography, Divider} from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
 	paper: {
@@ -18,32 +19,51 @@ export default function Profile(props) {
     
     return(<Box bgcolor="info.main" height={750}>
         <Paper class={classes.paper}>
-            <Box display="flex" justifyContent="center" p={3} >
-                <Avatar alt="avatar" src={user.avatar} />
-            </Box>
-            <Box display="flex" justifyContent="left" m={1} p={1} >
-                <h2>{user.name}</h2>
-            </Box>
+            <Grid container>
+                <Grid item xs={12}>
+                    <Box display="flex" justifyContent="center" p={3} >
+                        <Avatar alt="avatar" src={user.avatar} />
+                    </Box>
+                </Grid>
+                <Grid item xs={12}>
+                    <Typography variant="h5" style={{width: '100%', textAlign: 'center'}}>{user.name}</Typography>
+                </Grid>
+            </Grid>
         </Paper>
+        <Divider />
         <Paper class={classes.infomation}>
             <Grid  container spacing={1} >
-                <Grid item xs={12}>
-                    <h4>Email: {user.email}</h4>
+                <Grid item xs={12} >
+                    <Typography variant="h6" style={{fontWeight: 'bold'}}>Email:</Typography>
+                    <Typography variant="h6" gutterBottom>{user.email}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <h4>Created on: {user.date}</h4>
+                    <Typography variant="h6" style={{fontWeight: 'bold'}}>Ngày tạo:</Typography>
+                    <Typography variant="h6" gutterBottom>
+                        <Moment format="DD/MM/YYYY">
+                            {user.date}
+                        </Moment>
+                    </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <h4>Rank: {user.rank}</h4>
+                    <Typography variant="h6" style={{fontWeight: 'bold'}}>Rank:</Typography>
+                    <Typography variant="h6" gutterBottom>{user.rank}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <h4>Elo: {user.elo}</h4>
+                    <Typography variant="h6" style={{fontWeight: 'bold'}}>Elo:</Typography>
+                    <Typography variant="h6" gutterBottom>{user.elo}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <h4>Win rate: {(user.game.total==0 ? "0%" : user.game.win*100/user.game.total+"%")}</h4>
+                    <Typography variant="h6" style={{fontWeight: 'bold'}}>Tỉ lệ thắng:</Typography>
+                    <Typography variant="h6" gutterBottom>{(user.game.total==0 ? "0 %" : (Math.round(user.game.win * 100)/user.game.total).toFixed(2) + " %")}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <h4>Total games: {user.game.total}</h4>	
+                    <Typography variant="h6" style={{fontWeight: 'bold'}}>Tổng game đã chơi:</Typography>	
+                    <Typography variant="h6" gutterBottom>{user.game.total}</Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    <Typography variant="h6" style={{fontWeight: 'bold'}}>Số trận (thắng/thua/hòa):</Typography>	
+                    <Typography variant="h6" gutterBottom>{user.game.win} / {user.game.lose } / {user.game.draw}</Typography>
                 </Grid>
             </Grid>
         </Paper>
