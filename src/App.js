@@ -8,28 +8,37 @@ import ForgetPassword from './pages/ForgetPassword';
 import {BrowserRouter as Router,  Switch,  Route} from "react-router-dom";
 import React from 'react'
 import HistoryBox from './components/HistoryBox';
+import Profile from './components/Profile';
+import AnotherProfile from './components/AnotherProfile';
+import CaroGameHistory from './components/CaroGameHistory';
 function App() {
   
   return(
       <Router>
         <Switch>
-          <Route path="/signin">
+          <Route exact path="/signin">
             <Signin />
           </Route>
-          <Route path="/signup">
+          <Route exact path="/signup">
             <Signup />
           </Route>
-          <Route path="/signout">
+          <Route exact path="/signout">
             <Signout />
           </Route>
-          <Route path="/account/activate/:token">
+          <Route exact path="/account/activate/:token">
             <ActiveAccount/>
           </Route>
-          <Route path="/forget-password">
+          <Route exact path="/forget-password">
             <ForgetPassword/>
           </Route>
-          <Route path="/htr">
-            <HistoryBox/>
+          <Route exact path="/profile">
+            <Profile />
+          </Route>
+          <Route exact path="/user/:id">
+            <AnotherProfile />
+          </Route>
+          <Route exact path="/history/:id">
+            <CaroGameHistory />
           </Route>
           <Route path="/">
             <Home/>

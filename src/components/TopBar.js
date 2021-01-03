@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {Card, AppBar, Button, Toolbar, Typography, IconButton, MenuItem, Menu, Link } from '@material-ui/core';
+import {Card, AppBar, Button, Toolbar, Typography, IconButton, MenuItem, Menu, Avatar, Link } from '@material-ui/core';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
@@ -10,6 +10,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import io from 'socket.io-client'
 import userApi from '../api/userApi';
 import { makeStyles } from '@material-ui/core/styles';
+import { Redirect } from 'react-router-dom';
 
 const useStyle = makeStyles((theme) => ({
   bottom_space: {
@@ -27,6 +28,9 @@ const useStyle = makeStyles((theme) => ({
   },
   linkProfile: {
       textDecoration: 'none',
+      "&:hover": {
+        textDecoration: 'none',
+      }
   },
   large: {
       width: theme.spacing(9),
@@ -39,8 +43,11 @@ export default function TopBar(props) {
   const anchorRef = useRef(null);
   const classes = useStyle();
   const isLoggedIn = props.isLogin;
+  let curUser = null;
 
-  let name = null;
+  if(localStorage.getItem('curUser')) curUser = JSON.parse(localStorage.getItem('curUser'));
+
+
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
@@ -59,63 +66,47 @@ export default function TopBar(props) {
     setOpen(false);
     }
   }
-  
-  const getUserName = () =>
-  {
-    if( localStorage.getItem('curUser')){
-      name = JSON.parse(localStorage.getItem('curUser')).name;
-    }
-  }
-  
-  getUserName();
-  
 
   return (
-    <div className="root">
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" className="menuButton" color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
+          <Button
+          ref={anchorRef}
+          aria-controls={open ? 'menu-list-grow' : undefined}
+          aria-haspopup="true"
+          onClick={handleToggle}
+          >
+              { curUser ?
+              <Avatar alt="avatar" src={curUser.avatar}></Avatar>
+              :
+              <AccountCircleIcon fontSize="large"/> 
+              }
+          </Button>
           <Typography variant="h6" className="title">
-            Hello {!isLoggedIn ? <Button href="/signin" color="inherit">Login</Button>: name}
+            {curUser ? curUser.name : ""}
           </Typography>
-          
-          {isLoggedIn && (
-            <div>
-              <Button
-              ref={anchorRef}
-              aria-controls={open ? 'menu-list-grow' : undefined}
-              aria-haspopup="true"
-              onClick={handleToggle}
+          <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+          {({ TransitionProps, placement }) => (
+              <Grow
+              {...TransitionProps}
+              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
               >
-                  <AccountCircleIcon fontSize="large"/>
-              </Button>
-              <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-              {({ TransitionProps, placement }) => (
-                  <Grow
-                  {...TransitionProps}
-                  style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-                  >
-                  <Paper>
-                      <ClickAwayListener onClickAway={handleClose}>
-                      <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                          <Link href='/profile' className={classes.linkProfile}>
-                              <MenuItem onClick={handleClose}>Profile</MenuItem>
-                          </Link>
-                          <Link href='/signout' className={classes.linkProfile}>
-                              <MenuItem onClick={handleClose}>Sign out</MenuItem>
-                          </Link>
-                      </MenuList>
-                      </ClickAwayListener>
-                  </Paper>
-                  </Grow>
-              )}
-              </Popper>
-            </div>
+              <Paper>
+                  <ClickAwayListener onClickAway={handleClose}>
+                  <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                      <Link href='/profile' className={classes.linkProfile}>
+                          <MenuItem onClick={handleClose}>Profile</MenuItem>
+                      </Link>
+                      <Link href='/signout' className={classes.linkProfile}>
+                          <MenuItem onClick={handleClose}>Sign out</MenuItem>
+                      </Link>
+                  </MenuList>
+                  </ClickAwayListener>
+              </Paper>
+              </Grow>
           )}
+          </Popper>
         </Toolbar>
       </AppBar>
-    </div>
   );
 }

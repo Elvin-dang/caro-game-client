@@ -10,17 +10,18 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     height: 380,
     backgroundColor:'#cfe8fc',
+    padding: '10px',
 //    position: 'fixed',
   },
-  messlist: {
+  messList: {
     flexGrow: 1,
-    width: '93.5%',
+    width: '100%',
     height: '75%',
-    overflow: 'scroll',
-    padding: theme.spacing(1, 2),
+    overflow: 'auto',
+    // margin: theme.spacing(1),
   },
   searchIcon: {
-      margin: theme.spacing(2, 2),
+    margin: theme.spacing(2, 2),
     display: 'flex',
     alignItems: 'center',
 //    justifyContent: 'center',
@@ -32,14 +33,14 @@ export default function MessageList(props) {
   const { messagesEndRef, addMessages, messages, message, setMessage } = props;
   return (
       <div className={classes.root} id="messages"  >
-        <div className={classes.messlist}>
+        <div className={classes.messList}>
             {messages.map((item, index) =>
                 <Message key={index} message={item}/>
             )}
             <div ref={messagesEndRef} />
         </div>
         <form action="#" onSubmit={addMessages} className={classes.searchIcon}>
-          <TextField fullWidth id="outlined-basic" label="Message" variant="outlined" onChange={e => setMessage(e.target.value)} value={message} autoComplete="off" />
+          <TextField fullWidth id="outlined-basic" label="Tin nhắn" variant="outlined" onChange={e => setMessage(e.target.value)} value={message} autoComplete="off" />
           <button type="submit" style={{marginLeft: "10px", height: "100%"}}>
             <SendIcon color="primary" />
           </button>

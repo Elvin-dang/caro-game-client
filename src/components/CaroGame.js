@@ -114,11 +114,22 @@ const CaroGame = ({ socket, isStart, room }) => {
         
         if(calculateWinner(squares)) 
         {
-            console.log("send request");
             socket.emit("gameResult", {
                 room: {
                     ...room,
-                    status: 0
+                    status: 0,
+                    curGame: {
+                        ...room.curGame,
+                        move: {
+                            ...gameConfig,
+                            history: newHistory.concat([{
+                                squares: squares,
+                                location: {x: i, y: j}
+                            }]),
+                            stepNumber: newHistory.length,
+                            xIsNext: !gameConfig.xIsNext
+                        }
+                    }
                 },
                 winner: gameConfig.xIsNext ? 1 : 2,
                 resultType: "winLose" // Còn 1 type nữa là "draw"

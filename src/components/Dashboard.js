@@ -1,7 +1,7 @@
 import React,{useState, useEffect} from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import {Card,CardContent,Table,TableBody ,TableCell ,TableContainer ,TableHead ,Paper ,TableRow ,
-TablePagination, Grid, Link, Button,Modal,Input } from '@material-ui/core';
+TablePagination, Grid, Button,Modal,Input, CardActions } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
@@ -9,7 +9,7 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import { Redirect, useHistory} from 'react-router-dom';
+import { Redirect, useHistory, Link} from 'react-router-dom';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -26,8 +26,30 @@ const styles = (theme) => ({
     right: theme.spacing(1),
     top: theme.spacing(1),
     color: theme.palette.grey[500],
-  },
+  }
 });
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    position: 'absolute',
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
+
+function getModalStyle() {
+  const top = 50;
+  const left = 50;
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  };
+}
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -84,7 +106,9 @@ export default function Dashboard(props) {
   const isLoggedIn = props.isLogin;
   const socket = props.socket;
   const curUser = JSON.parse(localStorage.getItem('curUser'));
+  const classes = useStyles();
   
+  const [modalStyle] = useState(getModalStyle);
   const [openCreateRoomModal, setOpenCreateRoomModal] = useState(false);
   const [openJoinRoomModal, setOpenJoinRoomModal] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -93,15 +117,20 @@ export default function Dashboard(props) {
   const [roomDialogPlayer2,setRoomDialogPlayer2] = useState({});
   const [newRoomType,setNewRoomType] = useState('unlock');
   const [newRoomPassword,setNewRoomPassword] = useState('');
+  const [newRoomTimePerRound,setNewRoomTimePerRound] = useState('50');
   const [joinRoomPassword,setJoinRoomPassword] = useState('');
   const [roomSelected,setRoomSelected] = useState({});
   const [idJoinRoom, setIdJoinRoom] = useState('')
   const [isFindQuickGame,setIsFindQuickGame] = useState(false);
-
+  const [isAcceptInvite,setIsAcceptInvite] = useState({"isaccept":false,"room":null});
   const handleNewRoomTypeChange = (event) => {
     setNewRoomType(event.target.value);
   };
 
+  const handleNewRoomTimePerRoundChange = (event) => {
+    setNewRoomTimePerRound(event.target.value);
+  };
+  console.log(newRoomTimePerRound);
   const handleNewRoomPasswordChange = (event) => {
     setNewRoomPassword(event.target.value);
   }
@@ -126,6 +155,9 @@ export default function Dashboard(props) {
 
   const handleOpenCreateRoomModal= () => {
     setOpenCreateRoomModal(true);
+    setNewRoomPassword('');
+    setNewRoomType('unlock');
+    setNewRoomTimePerRound('50');
   }
 
   const handleCloseCreateRoomModal= () => {
@@ -153,6 +185,7 @@ export default function Dashboard(props) {
       }); 
     }
   }
+
   useEffect(()=>{
     socket.on('updateUsersOnlineList', (response) => setUsersOnline(response)); 
     socket.on('updateRoomsList',  (response) => setPlayRooms(response));
@@ -164,21 +197,19 @@ export default function Dashboard(props) {
           title: "Bạn nhận được lời mời?",
           text: "Người chơi " + response.playerInviteName + " mời bạn vào room " + response.room + "!",
           icon: "warning",
-          buttons: true,
+          buttons: {
+            cancel: "Từ chối",
+            catch: {
+              text: "Chấp nhận",
+              value: "accept",
+            }},
           dangerMode: false,
         })
-        .then((accept) => {
-          if (accept) {
-            for (let a=0; a < playRooms.length; a++) {
-              if (playRooms[a].roomId == response.room) {
-                console.log('accept invited');
-                joinRoom(playRooms[a].roomId,playRooms[a].type,playRooms[a].password)
-                break;
-              }
-            }
-          }
-          else {
-          }
+        .then((value) => {
+          if(value === "accept")
+          {
+            setIsAcceptInvite({"isaccept":true,"room":response.room});
+          }     
         });
       }});
     socket.on('findedQuickGame',  (response) => {
@@ -192,8 +223,8 @@ export default function Dashboard(props) {
   }, []);
   
   const createRoom = () => {
-    socket.emit("createRoom", {'hostName':curUser.name,'newRoomType':newRoomType,'newRoomPassword':newRoomPassword,'newRoomTimePerRound':0});
-    socket.emit("joinRoom", playRooms.length + 1);
+    socket.emit("createRoom", {'hostName':curUser.name,'newRoomType':newRoomType,'newRoomPassword':newRoomPassword,'newRoomTimePerRound':newRoomTimePerRound});
+    socket.emit("joinRoom",  {"roomId":(playRooms.length + 1),"playerId":curUser._id});
     const path = "room/" + (playRooms.length + 1);
     history.push(path);
   }
@@ -201,7 +232,7 @@ export default function Dashboard(props) {
   const joinRoom = (id,roomType,roomPassword) => {
     if(roomType === 'unlock')
     {
-      socket.emit("joinRoom", id);
+      socket.emit("joinRoom", {"roomId":id,"playerId":curUser._id});
       const path = "room/" + id;
       history.push(path);
     }
@@ -213,11 +244,9 @@ export default function Dashboard(props) {
   }
 
   const joinLockRoom = () =>{
-    
-    console.log(roomSelected.password)
     if(joinRoomPassword === roomSelected.password)
     {
-      socket.emit("joinRoom", roomSelected.id);
+      socket.emit("joinRoom", {"roomId":roomSelected.id,"playerId":curUser._id});
       const path = "room/" + roomSelected.id;
       history.push(path);
     }
@@ -255,6 +284,20 @@ export default function Dashboard(props) {
     });
   }
 
+  if(isAcceptInvite.isaccept === true)
+  {
+    for (let a=0; a < playRooms.length; a++) {
+      if (playRooms[a].roomId == isAcceptInvite.room) {
+        console.log('accept invited');
+        joinRoom(playRooms[a].roomId,playRooms[a].type,playRooms[a].password);
+
+        break;
+      }
+    }
+    setIsAcceptInvite({"isaccept":false,"room":null});
+
+  }
+
   return (
     <div >
       {!isLoggedIn ? <Redirect to="/signin"/>: 
@@ -273,11 +316,11 @@ export default function Dashboard(props) {
                       <TableHead>
                         <TableRow>
                           <StyledTableCell>ID room</StyledTableCell>
-                          <StyledTableCell align="right">Người tạo</StyledTableCell>
-                          <StyledTableCell align="right">Trạng thái</StyledTableCell>
-                          <StyledTableCell align="right">Loại phòng</StyledTableCell>
-                          <StyledTableCell align="right"></StyledTableCell>
-                          <StyledTableCell align="right"></StyledTableCell>
+                          <StyledTableCell align="center">Người tạo</StyledTableCell>
+                          <StyledTableCell align="center">Trạng thái</StyledTableCell>
+                          <StyledTableCell align="center">Loại phòng</StyledTableCell>
+                          <StyledTableCell align="center"></StyledTableCell>
+                          <StyledTableCell align="center"></StyledTableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -286,11 +329,11 @@ export default function Dashboard(props) {
                           <StyledTableCell component="th" scope="row">
                             {room.roomId}
                           </StyledTableCell>
-                          <StyledTableCell align="right">{room.hostName}</StyledTableCell>
-                          <StyledTableCell align="right">{room.status === 0 ? 'đang chờ' : 'đã chơi'}</StyledTableCell>
-                          <StyledTableCell align="right" style={{color: room.type === 'lock' ? 'red' : 'blue'}}>{room.type === 'lock' ? 'Lock' : 'Unlock'}</StyledTableCell>
-                          <StyledTableCell align="right"><Button color="primary" onClick={() => joinRoom(room.roomId,room.type,room.password)}>Tham gia</Button></StyledTableCell>
-                          <StyledTableCell align="right"><Button color="primary" onClick={() => handleClickOpenDialog(room)}>Thông tin</Button></StyledTableCell>
+                          <StyledTableCell align="center">{room.hostName}</StyledTableCell>
+                          <StyledTableCell align="center">{room.status === 0 ? 'đang chờ' : 'đã chơi'}</StyledTableCell>
+                          <StyledTableCell align="center" style={{color: room.type === 'lock' ? 'red' : 'blue'}}>{room.type === 'lock' ? 'Khóa' : 'Không khóa'}</StyledTableCell>
+                          <StyledTableCell align="center"><Button color="primary" onClick={() => joinRoom(room.roomId,room.type,room.password)}>Tham gia</Button></StyledTableCell>
+                          <StyledTableCell align="center"><Button color="primary" onClick={() => handleClickOpenDialog(room)}>Thông tin</Button></StyledTableCell>
                         </StyledTableRow>
                       ))}
                       </TableBody>
@@ -303,6 +346,11 @@ export default function Dashboard(props) {
                             <li key={item.userId}><Button href={'/user/'+item.userId} size="small" style={{textTransform: 'none'}}>{item.userName}</Button></li>
                       )}
                       </CardContent>
+                      <CardActions>
+                          <Button href='/topPlayers' fullWidth color="secondary">
+                              Bảng xếp hạng
+                          </Button>
+                      </CardActions>
                     </Card>
                     </Grid>
                   </Grid>
@@ -316,42 +364,40 @@ export default function Dashboard(props) {
                   </DialogTitle>
                   <DialogContent dividers>
                     <Typography gutterBottom>
-                      Room: {roomDialog.roomId}
+                      <p style={{fontWeight: 'bold', display: 'inline'}}>Room:</p> {roomDialog.roomId}
                     </Typography>
                     <Typography gutterBottom>
-                      Người tạo: {roomDialog.hostName}
+                      <p style={{fontWeight: 'bold', display: 'inline'}}>Người tạo:</p>  {roomDialog.hostName}
                     </Typography>
                     <Typography gutterBottom>
-                      Trạng thái: {roomDialog.status === 0 ? 'đang chơi' : 'đã chơi'}
+                      <p style={{fontWeight: 'bold', display: 'inline'}}>Trạng thái:</p>  {roomDialog.status === 0 ? 'đang chờ' : 'đã chơi'}
                     </Typography>
                     <Typography gutterBottom>
-                      Loại phòng: {roomDialog.type}
+                      <p style={{fontWeight: 'bold', display: 'inline'}}>Loại phòng:</p>  {roomDialog.type === 'unlock' ? 'không khóa' : 'khóa'}
                     </Typography>
                     <Typography gutterBottom>
-                      Player 1: {roomDialogPlayer1.name === null ? 'chưa vào' : roomDialogPlayer1.name}
+                      <p style={{fontWeight: 'bold', display: 'inline'}}>Player 1:</p>  {roomDialogPlayer1.name === null ? 'chưa vào' : roomDialogPlayer1.name}
                     </Typography>
                     <Typography gutterBottom>
-                      Player 2: {roomDialogPlayer2.name === null ? 'chưa vào' : roomDialogPlayer2.name}
+                      <p style={{fontWeight: 'bold', display: 'inline'}}>Player 2:</p>  {roomDialogPlayer2.name === null ? 'chưa vào' : roomDialogPlayer2.name}
                     </Typography>
                   </DialogContent>
                   <DialogActions>
                     <Button autoFocus onClick={handleCloseDialog} color="primary">
-                      Close
+                      Đóng
                     </Button>
                   </DialogActions>
                 </Dialog>
 
 
                 {/* Create New Room Modal */}
-                <div>
                   <Modal
                     open={openCreateRoomModal}
                     onClose={handleCloseCreateRoomModal}
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
-                    style={{paddingLeft:"30%",paddingTop:'20px'}}
                   >
-                    <div style={{backgroundColor:'white',width:'400px',height:'300px',padding:'20px'}}>
+                    <div  style={modalStyle} className={classes.paper}>
                       <h2 >Tạo phòng chơi mới</h2>
                       <p >
                         Vui lòng chọn loại phòng chơi muốn tạo:
@@ -362,11 +408,18 @@ export default function Dashboard(props) {
                       </RadioGroup>
                       <Input placeholder="Nhập password" onChange={handleNewRoomPasswordChange}></Input> 
                       <div style={{alignItems: 'center'}}>
+                      <p >
+                        Vui lòng chọn thời gian giới hạn mỗi lượt:
+                      </p>
+                      <RadioGroup aria-label="gender" name="gender2" value={newRoomTimePerRound} onChange={handleNewRoomTimePerRoundChange}>
+                        <FormControlLabel value="50" control={<Radio />} label="50s" />
+                        <FormControlLabel value="100" control={<Radio />} label="100s" />
+                        <FormControlLabel value="150" control={<Radio />} label="150s" />
+                      </RadioGroup>
                       <Button variant="contained" color="primary" onClick={() => createRoom()} style={{margin:'10px'}}>Tạo phòng</Button>
                       </div>
                     </div>
                   </Modal>
-                </div>
 
 
                 {/* Join Room Modal */}
@@ -376,9 +429,8 @@ export default function Dashboard(props) {
                     onClose={handleCloseJoinRoomModal}
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
-                    style={{paddingLeft:"30%",paddingTop:'20px'}}
                   >
-                    <div style={{backgroundColor:'white',width:'400px',height:'300px',padding:'20px'}}>
+                    <div style={modalStyle} className={classes.paper}>
                       <h2 >Tham gia phòng</h2>
                       <p >
                         Vui lòng nhập mật khẩu phòng:
@@ -390,9 +442,6 @@ export default function Dashboard(props) {
                     </div>
                   </Modal>
                 </div>
-                <Button href="/topPlayers" >
-                  Button Top Players
-                </Button>
             </div>
           }
     </div>

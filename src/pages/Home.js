@@ -5,11 +5,9 @@ import io from 'socket.io-client'
 import {BrowserRouter as Router,  Switch,  Route, Redirect} from "react-router-dom";
 import Room from '../components/Room';
 import MessageList from '../components/MessageList';
-import Profile from '../components/Profile';
-import AnotherProfile from '../components/AnotherProfile';
 import TopPlayer from '../pages/TopPlayer'
 function Home() {
-	const socket = io.connect(process.env.REACT_APP_api_domain_withoutAPI,
+	const socket = io.connect(process.env.REACT_APP_test_api_domain_withoutAPI,
 		{
 			transports: ['websocket'], 
 			upgrade: false
@@ -22,8 +20,8 @@ function Home() {
 		<>
 		{!isLogin ? <Redirect to="/signin"/>
 		: (<>
-			<TopBar isLogin={isLogin}/>
 			<Router>
+					<TopBar isLogin={isLogin}/>
 					<Switch>
 						<Route path="/message">
 							<MessageList socket={socket} isLogin={isLogin}/>
@@ -31,14 +29,8 @@ function Home() {
 						<Route path="/room/:id">
 							<Room socket={socket} isLogin={isLogin} />
 						</Route>
-						<Route path="/user/:id">
-							<AnotherProfile />
-						</Route>
 						<Route path="/topPlayers">
 							<TopPlayer />
-						</Route>
-						<Route path="/profile">
-							<Profile />
 						</Route>
 						<Route path="/">
 							<Dashboard socket={socket} isLogin={isLogin}/>
