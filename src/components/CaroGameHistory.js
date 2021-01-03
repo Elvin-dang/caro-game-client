@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button } from '@material-ui/core';
+import { Button, Grid, Typography, IconButton, Container } from '@material-ui/core';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import CaroBoard from './CaroBoard';
-import { useParams, useLocation } from 'react-router-dom';
+import Message from './MessageItem';
+import { useParams, useLocation, useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     btnBold: {
@@ -10,20 +12,36 @@ const useStyles = makeStyles((theme) => ({
     },
     game: {
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        minWidth: '705px',
     },
     gameInfo: {
         marginLeft: '20px'
-    }
+    },
+    chatBox: {
+        marginLeft: '20px'
+    },
+    root: {
+        width: '100%',
+        height: 565,
+        backgroundColor:'#cfe8fc',
+        padding: '10px',
+    },
+    messList: {
+        flexGrow: 1,
+        width: '100%',
+        height: '100%',
+        overflow: 'auto',
+    },
 }));
 
 const size = 20;
 const winCondition = 5;
 
 const CaroGameHistory = () => {
+    const historyPage = useHistory();
     const { game } = useLocation();
     const { move } = game;
-    console.log(game);
     let isStart = false;
 
     let tmpArr = Array(size);
@@ -53,8 +71,10 @@ const CaroGameHistory = () => {
     const winner = calculateWinner(current.squares);
     let moves = history.map((step, move) => {
         const desc = move ?
-        'Go to move #' + move + ' (' + step.location.x + ',' + step.location.y + ')' :
-        'Go to game start';
+        `\"${move%2 === 1 ? game.player1.name : game.player2.name}\"` 
+        + ' đánh vào vị trí'
+        + ' (' + step.location.x + ',' + step.location.y + ')' :
+        'Bắt đầu trận đấu';
         return (gameConfig.stepNumber === move) ? (
             <li key={move}>
                 <Button className={classes.btnBold} onClick={() => jumpTo(move)}>{desc}</Button>
@@ -72,9 +92,9 @@ const CaroGameHistory = () => {
     let arrow = gameConfig.isDescending ? '↓' : '↑';
     let status;
     if (winner) {
-        status = 'Winner: ' + winner.val;
+        status = 'Người thắng cuộc: ' + `${winner.val === "X" ? game.player1.name + " (X)" : game.player2.name + " (O)"}`;
     } else {
-        status = 'Next player: ' + (gameConfig.xIsNext ? 'X' : 'O');
+        status = 'Lượt tiếp theo: ' + (gameConfig.xIsNext ? game.player1.name + " (X)" : game.player2.name + " (O)");
     }
 
     const jumpTo = (step) => {
@@ -120,23 +140,57 @@ const CaroGameHistory = () => {
 
     return (
         <div>
-            <div className={classes.game}>
-                <div>
-                    <CaroBoard
-                        squares={current.squares}
-                        onClick={(i, j) => handleClick(i, j)}
-                        winner={winner}
-                        isStart={isStart}
-                    />
-                </div>
-                <div className={classes.gameInfo}>
-                    <div>
-                        <Button onClick={sort}>Thứ tự bước {arrow}</Button>
-                    </div>
-                    <div>{status}</div>
-                    <ol>{moves}</ol>
-                </div>
-            </div>
+            <Container maxWidth="md" >
+                <Grid container alignItems='center' justify='center'>
+                    <Grid item xs={1} >
+                            <IconButton onClick={() => historyPage.goBack()} style={{height: '100%'}}>
+                                <ArrowBackIcon></ArrowBackIcon>
+                            </IconButton>
+                    </Grid>
+                    <Grid item xs={11}>
+                        <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                        Xem lại trận đấu
+                        </Typography>
+                    </Grid>
+                </Grid>
+            </Container>
+            <Grid container justify="center">
+                <Grid item xs={1}/>
+                <Grid item xs={10}>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} lg={5}>
+                            <div className={classes.game}>
+                                <CaroBoard
+                                    squares={current.squares}
+                                    onClick={(i, j) => handleClick(i, j)}
+                                    winner={winner}
+                                    isStart={isStart}
+                                />
+                            </div>
+                        </Grid>
+                        <Grid item xs={12} lg={3}>
+                            <div className={classes.gameInfo} style={{marginTop: '20px'}}>
+                                <div style={{display: 'flex', justifyContent: 'center', marginBottom: '20px'}}>
+                                    <Button onClick={sort} variant="outlined">Thứ tự bước {arrow}</Button>
+                                </div>
+                                <div style={{textAlign: "center", color: '#fcba03'}}>{status}</div>
+                                <ol style={{height: '550px', overflow: 'hidden', overflowY: 'scroll'}}>{moves}</ol>
+                            </div>
+                        </Grid>
+                        <Grid item xs={12} md={12} lg={4}>
+                            <Typography align="center" variant="h4" gutterBottom style={{marginTop: '20px'}}>Tin nhắn trong trận</Typography>
+                            <div className={classes.root} id="messages">
+                                <div className={classes.messList}>
+                                    {game.chat.map((item, index) =>
+                                        <Message key={index} message={item}/>
+                                    )}
+                                </div>
+                            </div>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={1}/>
+            </Grid>
         </div>
     )
 }

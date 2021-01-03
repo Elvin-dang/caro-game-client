@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '10px',
 //    position: 'fixed',
   },
-  messlist: {
+  messList: {
     flexGrow: 1,
     width: '100%',
     height: '75%',
@@ -33,7 +33,7 @@ export default function MessageList(props) {
   const { messagesEndRef, addMessages, messages, message, setMessage } = props;
   return (
       <div className={classes.root} id="messages"  >
-        <div className={classes.messlist}>
+        <div className={classes.messList}>
             {messages.map((item, index) =>
                 <Message key={index} message={item}/>
             )}

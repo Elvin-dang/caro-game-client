@@ -244,11 +244,9 @@ export default function Dashboard(props) {
   }
 
   const joinLockRoom = () =>{
-    
-    console.log(roomSelected.password)
     if(joinRoomPassword === roomSelected.password)
     {
-      socket.emit("joinRoom", roomSelected.id);
+      socket.emit("joinRoom", {"roomId":roomSelected.id,"playerId":curUser._id});
       const path = "room/" + roomSelected.id;
       history.push(path);
     }
@@ -318,11 +316,11 @@ export default function Dashboard(props) {
                       <TableHead>
                         <TableRow>
                           <StyledTableCell>ID room</StyledTableCell>
-                          <StyledTableCell align="right">Người tạo</StyledTableCell>
-                          <StyledTableCell align="right">Trạng thái</StyledTableCell>
-                          <StyledTableCell align="right">Loại phòng</StyledTableCell>
-                          <StyledTableCell align="right"></StyledTableCell>
-                          <StyledTableCell align="right"></StyledTableCell>
+                          <StyledTableCell align="center">Người tạo</StyledTableCell>
+                          <StyledTableCell align="center">Trạng thái</StyledTableCell>
+                          <StyledTableCell align="center">Loại phòng</StyledTableCell>
+                          <StyledTableCell align="center"></StyledTableCell>
+                          <StyledTableCell align="center"></StyledTableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -331,11 +329,11 @@ export default function Dashboard(props) {
                           <StyledTableCell component="th" scope="row">
                             {room.roomId}
                           </StyledTableCell>
-                          <StyledTableCell align="right">{room.hostName}</StyledTableCell>
-                          <StyledTableCell align="right">{room.status === 0 ? 'đang chờ' : 'đã chơi'}</StyledTableCell>
-                          <StyledTableCell align="right" style={{color: room.type === 'lock' ? 'red' : 'blue'}}>{room.type === 'lock' ? 'Lock' : 'Unlock'}</StyledTableCell>
-                          <StyledTableCell align="right"><Button color="primary" onClick={() => joinRoom(room.roomId,room.type,room.password)}>Tham gia</Button></StyledTableCell>
-                          <StyledTableCell align="right"><Button color="primary" onClick={() => handleClickOpenDialog(room)}>Thông tin</Button></StyledTableCell>
+                          <StyledTableCell align="center">{room.hostName}</StyledTableCell>
+                          <StyledTableCell align="center">{room.status === 0 ? 'đang chờ' : 'đã chơi'}</StyledTableCell>
+                          <StyledTableCell align="center" style={{color: room.type === 'lock' ? 'red' : 'blue'}}>{room.type === 'lock' ? 'Khóa' : 'Không khóa'}</StyledTableCell>
+                          <StyledTableCell align="center"><Button color="primary" onClick={() => joinRoom(room.roomId,room.type,room.password)}>Tham gia</Button></StyledTableCell>
+                          <StyledTableCell align="center"><Button color="primary" onClick={() => handleClickOpenDialog(room)}>Thông tin</Button></StyledTableCell>
                         </StyledTableRow>
                       ))}
                       </TableBody>
@@ -431,9 +429,8 @@ export default function Dashboard(props) {
                     onClose={handleCloseJoinRoomModal}
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
-                    style={{paddingLeft:"30%",paddingTop:'20px'}}
                   >
-                    <div style={{backgroundColor:'white',padding:'20px'}}>
+                    <div style={modalStyle} className={classes.paper}>
                       <h2 >Tham gia phòng</h2>
                       <p >
                         Vui lòng nhập mật khẩu phòng:

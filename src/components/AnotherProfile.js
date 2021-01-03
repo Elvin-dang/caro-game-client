@@ -6,7 +6,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import InfomationBox from './InfomationBox';
 import HistoryBox from './HistoryBox';
 import userApi from '../api/userApi';
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
 }));
@@ -15,6 +15,7 @@ export default function AnotherProfile() {
 	const [resUser, setResUser] = useState({_id:"", avatar:null, email:"", elo:0, date:"", rank:"", game:{win:0, lose:0, total:0}, history:[]});
 	const [isLoading, setIsLoading] = useState(true);
 	const classes = useStyles();
+	const history = useHistory();
 	const { id } = useParams();
 	
 	useEffect(()=>{
@@ -39,11 +40,11 @@ export default function AnotherProfile() {
 			<Container maxWidth="md" >
 				<Grid container alignItems='center' justify='center'>
 					<Grid item xs={1} >
-						<Link to='/'>
-							<IconButton style={{height: '100%'}}>
+						{/* <Link to='/'> */}
+							<IconButton onClick={() => history.goBack()} style={{height: '100%'}}>
 								<ArrowBackIcon></ArrowBackIcon>
 							</IconButton>
-						</Link>
+						{/* </Link> */}
 					</Grid>
 					<Grid item xs={11}>
 						<Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
