@@ -6,6 +6,8 @@ import { Redirect, Link } from 'react-router-dom';
 import Facebook from './Facebook'
 import Google from './Google'
 import userApi from '../api/userApi';
+import swal from 'sweetalert';
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -56,11 +58,14 @@ export default function SignIn() {
         setIsLoading(false);
         setIsRedirect(true);
       } else {
-          alert(response.message);
+          swal(response.message, "", "error");
       }
     } catch(err) {
       setIsLoading(false);
-      if(err.response.status === 401) alert(err.response.data.message);
+      if(err.response.status === 400) swal(err.response.data.details[0].message, "", "warning");
+      else if(err.response.status === 401) swal(err.response.data.message, "", "error");
+      else if(err.response.status === 403) swal(err.response.data.message, "", "error");
+      else swal("Server không phản hồi", "", "error");
     }
   };
   return (
@@ -74,12 +79,12 @@ export default function SignIn() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Đăng nhập
         </Typography>
         <form method="form" id="form-data" className="form" onSubmit={handleSubmit} autoComplete="off">
-          <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus 
+          <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Tài khoản" name="email" autoComplete="email" autoFocus 
             onChange={e => setUser({ ...user, email: e.target.value})}  />
-          <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Password" type="password" id="password"
+          <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Mật khẩu" type="password" id="password"
             onChange={e => setUser({ ...user, password: e.target.value})} autoComplete="current-password" />
           <Button
             type="submit"
@@ -88,7 +93,7 @@ export default function SignIn() {
             color="primary"
             className={classes.submit}
           >
-            Sign In
+            Đăng nhập
           </Button>
           <Grid container mb={2} className={classes.submit}>
             <Grid item xs >
@@ -101,12 +106,12 @@ export default function SignIn() {
           <Grid container>
             <Grid item xs>
               <Link to="/forget-password" variant="body2">
-                Forgot password?
+                Quên mật khẩu?
               </Link>
             </Grid>
             <Grid item>
               <Link to="/signup" variant="body2">
-                {"Don't have an account? Sign Up"}
+                {"Bạn chưa có tài khoản? Đăng ký"}
               </Link>
             </Grid>
           </Grid>

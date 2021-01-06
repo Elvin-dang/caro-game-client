@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import MessageBox from './MessageBox';
 export default function MessageRoom(props) {
     const {socket, room} = props;
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState(room.chat);
     const [message, setMessage] = useState("");
     const messagesEndRef = useRef(null);
     const getUser = () =>
@@ -22,15 +22,19 @@ export default function MessageRoom(props) {
         }
     }
     useEffect(()=>{
-        socket.on('server-chat-room',response => {
-            setMessages(draft => [ ...draft, {
-                name: response.name, 
-                message: response.message, 
-                avatar: response.avatar
-            }]);
-            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-        });
-        }, []);
+        // socket.on('server-chat-room',response => {
+        //     setMessages(draft => [ ...draft, {
+        //         name: response.name, 
+        //         message: response.message, 
+        //         avatar: response.avatar
+        //     }]);
+        //     messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        // });
+        
+        setMessages(room.chat);
+        //messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }, [room]);
+
     return (
         <MessageBox messagesEndRef={messagesEndRef} messages={messages} addMessages={sendNewMessage} message={message} setMessage={setMessage}/>
     )

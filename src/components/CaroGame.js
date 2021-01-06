@@ -111,6 +111,16 @@ const CaroGame = ({ socket, isStart, room }) => {
                 xIsNext: !gameConfig.xIsNext
             }
         });
+
+        setGameConfig({
+            ...gameConfig,
+            history: newHistory.concat([{
+                squares: squares,
+                location: {x: i, y: j}
+            }]),
+            stepNumber: newHistory.length,
+            xIsNext: !gameConfig.xIsNext
+        });
         
         if(calculateWinner(squares)) 
         {

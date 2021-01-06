@@ -1,10 +1,11 @@
 import React, { useEffect, useState    } from 'react';
-import { Avatar, LinearProgress, Button, Typography, Grid, TextField, CssBaseline, Container } from '@material-ui/core';
+import { Avatar, LinearProgress, Button, Typography, Grid, TextField, CssBaseline, Container, Step, Stepper, StepLabel } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Link } from 'react-router-dom';
 import userApi from '../api/userApi';
 import MuiAlert from '@material-ui/lab/Alert';
+import swal from 'sweetalert';
 
 function Alert(props) {
     return <MuiAlert style={{width: '100%'}} elevation={6} variant="filled" {...props} />;
@@ -50,17 +51,6 @@ export default function SignIn() {
     const [isLoading, setIsLoading] = useState(false);
     const classes = useStyles();
 
-    // useEffect(() => {
-    //     setIsLoading(false);
-    //     setProcess(1);
-    //     setInfo({
-    //         email: "", 
-    //         token: "",
-    //         password: "",
-    //         retypePassword: ""
-    //     });
-    // }, []);
-
     const handleSubmit = async (e) => {
         try{
             e.preventDefault();
@@ -73,9 +63,9 @@ export default function SignIn() {
             }
         } catch(err) {
             setIsLoading(false);
-            if(err.response.status === 403) alert(err.response.data.message);
-            else if(err.response.status === 400) alert(err.response.data.details[0].message);
-            else alert('Server not response');
+            if(err.response.status === 403) swal(err.response.data.message, "", "error");
+            else if(err.response.status === 400) swal(err.response.data.details[0].message, "", "warning");
+            else swal('Server không phản hồi', "", "error");
         }
     };
 
@@ -91,7 +81,7 @@ export default function SignIn() {
             }
         } catch(err) {
             setIsLoading(false);
-            alert('Wrong reset password code');
+            swal('Code đặt lại mật khẩu không hợp lệ', "", "error");
         }
     }
 
@@ -100,7 +90,7 @@ export default function SignIn() {
             e.preventDefault();
             if(info.password !== info.retypePassword) 
             {
-                alert("Wrong Re-type password. Please try again!");
+                swal("Nhập lại mật khẩu không trùng khớp", "", "info");
                 return;
             }
             setIsLoading(true);
@@ -112,8 +102,8 @@ export default function SignIn() {
             }
         } catch(err) {
             setIsLoading(false);
-            if(err.response.status === 400) alert(err.response.data.details[0].message);
-            else alert('Server not response');
+            if(err.response.status === 400) swal(err.response.data.details[0].message, "", "warning");
+            else swal('Server không phản hồi', "", "error");
         }
     }
 
@@ -126,14 +116,25 @@ export default function SignIn() {
             <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5" className={classes.title}>
-            Forgot password
+            Quên mật khẩu
             </Typography>
+            <Stepper alternativeLabel activeStep={process - 1} style={{background: '#fafafa'}}>
+                <Step>
+                    <StepLabel>Điền Email</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Xác nhận mã code</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Đặt lại mật khẩu</StepLabel>
+                </Step>
+            </Stepper>
             {process === 1 ? // Điền email
                 <form method="form" id="form-data" className="form" onSubmit={handleSubmit} autoComplete="off">
-                    <Typography component="h1" variant="h6">
-                        Fill your email to send reset password code
+                    <Typography component="h1" variant="h6" align="center">
+                        Điền tài khoản (email) của bạn
                     </Typography>
-                    <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus 
+                    <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Tài khoản" name="email" autoComplete="email" autoFocus 
                         onChange={e => setInfo({ ...info, email: e.target.value})} value={info.email}  />
                     <Button
                         type="submit"
@@ -142,20 +143,20 @@ export default function SignIn() {
                         color="primary"
                         className={classes.submit}
                     >
-                        Send code to email
+                        Gửi code đến email của tôi
                     </Button>
                     <Grid container justify="center" alignItems="center">
                         <Link to="/signin" variant="body2">
-                            Go to sign in
+                            Đi đến đăng nhập
                         </Link>
                     </Grid>
                 </form>
                 : process === 2 ? // Điền reset code
                 <form method="form" id="form-data" className="form" onSubmit={handleSubmitConfirmToken} autoComplete="off">
-                    <Typography component="h1" variant="h6">
-                        Type reset password code here
+                    <Typography component="h1" variant="h6" align="center">
+                        Điền code đặt lại mật khẩu
                     </Typography>
-                    <TextField variant="outlined" margin="normal" required fullWidth id="resetCode" label="Reset Code" name="Reset Code" autoFocus 
+                    <TextField variant="outlined" margin="normal" required fullWidth id="resetCode" label="Code" name="Reset Code" autoFocus 
                         onChange={e => setInfo({ ...info, token: e.target.value})} value={info.token}  />
                     <Button
                         type="submit"
@@ -164,22 +165,22 @@ export default function SignIn() {
                         color="primary"
                         className={classes.submit}
                     >
-                        Confirm reset code
+                        Xác nhận
                     </Button>
                     <Grid container justify="center" alignItems="center">
                         <Link to="/signin" variant="body2">
-                            Go to sign in
+                        Đi đến đăng nhập
                         </Link>
                     </Grid>
                 </form>
                 : process === 3 ? // Điền mật khẩu mới
                 <form method="form" id="form-data" className="form" onSubmit={handleSubmitChangePassword} autoComplete="off">
-                    <Typography component="h1" variant="h6">
-                        Enter new password
+                    <Typography component="h1" variant="h6" align="center">
+                        Điền mật khẩu mới
                     </Typography>
-                    <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Password" type="password" id="password"
+                    <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Mật khẩu" type="password" id="password"
                         onChange={e => setInfo({ ...info, password: e.target.value})} autoComplete="current-password" value={info.password}/>
-                    <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Re-type Password" type="password" id="repassword"
+                    <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Nhập lại mật khẩu" type="password" id="repassword"
                         onChange={e => setInfo({ ...info, retypePassword: e.target.value})} value={info.retypePassword} />
                     <Button
                         type="submit"
@@ -188,11 +189,11 @@ export default function SignIn() {
                         color="primary"
                         className={classes.submit}
                     >
-                        Change password
+                        Đổi mật khẩu
                     </Button>
                     <Grid container justify="center" alignItems="center">
                         <Link to="/signin" variant="body2">
-                            Go to sign in
+                        Đi đến đăng nhập
                         </Link>
                     </Grid>
                 </form>
@@ -201,7 +202,7 @@ export default function SignIn() {
                     <Alert severity="success">Đặt lại mật khẩu thành công</Alert>
                     <Link to='/signin' className={classes.linkProfile}>
                         <Button variant="outlined" color="primary" className={classes.button}>
-                            Đi đến đăng nhập
+                        Đi đến đăng nhập
                         </Button>
                     </Link>
                 </>

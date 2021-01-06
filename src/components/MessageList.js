@@ -67,7 +67,7 @@ export default function MessageList(props) {
 	useEffect(()=>{
         socket.on('newMessage',response => {
             setMessages(draft => [ ...draft, {name: response.name, message:response.message}])});
-        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        // messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
 

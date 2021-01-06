@@ -95,10 +95,10 @@ export default function TopBar(props) {
                   <ClickAwayListener onClickAway={handleClose}>
                   <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
                       <Link href='/profile' className={classes.linkProfile}>
-                          <MenuItem onClick={handleClose}>Profile</MenuItem>
+                          <MenuItem onClick={handleClose}>Thông tin</MenuItem>
                       </Link>
                       <Link href='/signout' className={classes.linkProfile}>
-                          <MenuItem onClick={handleClose}>Sign out</MenuItem>
+                          <MenuItem onClick={handleClose}>Đăng xuất</MenuItem>
                       </Link>
                   </MenuList>
                   </ClickAwayListener>

@@ -1,7 +1,7 @@
 import React,{useState, useEffect} from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import {Card,CardContent,Table,TableBody ,TableCell ,TableContainer ,TableHead ,Paper ,TableRow ,
-TablePagination, Grid, Button,Modal,Input, CardActions } from '@material-ui/core';
+TablePagination, Grid, Button,Modal,Input, CardActions, TextField } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
@@ -123,14 +123,22 @@ export default function Dashboard(props) {
   const [idJoinRoom, setIdJoinRoom] = useState('')
   const [isFindQuickGame,setIsFindQuickGame] = useState(false);
   const [isAcceptInvite,setIsAcceptInvite] = useState({"isaccept":false,"room":null});
+  const [customTPR, setCustomTPR] = useState(false);
+
   const handleNewRoomTypeChange = (event) => {
     setNewRoomType(event.target.value);
   };
 
   const handleNewRoomTimePerRoundChange = (event) => {
-    setNewRoomTimePerRound(event.target.value);
+    if(event.target.value === "custom") {
+      setCustomTPR(true);
+      setNewRoomTimePerRound("5");
+    } else {
+      setCustomTPR(false);
+      setNewRoomTimePerRound(event.target.value);
+    }
   };
-  console.log(newRoomTimePerRound);
+
   const handleNewRoomPasswordChange = (event) => {
     setNewRoomPassword(event.target.value);
   }
@@ -223,10 +231,14 @@ export default function Dashboard(props) {
   }, []);
   
   const createRoom = () => {
-    socket.emit("createRoom", {'hostName':curUser.name,'newRoomType':newRoomType,'newRoomPassword':newRoomPassword,'newRoomTimePerRound':newRoomTimePerRound});
-    socket.emit("joinRoom",  {"roomId":(playRooms.length + 1),"playerId":curUser._id});
-    const path = "room/" + (playRooms.length + 1);
-    history.push(path);
+    if(Number.parseInt(newRoomTimePerRound) < 5) swal("Thời gian tối thiểu là 5 giây", "", "warning");
+    else if (Number.parseInt(newRoomTimePerRound) > 200) swal("Thời gian tối đa là 200 giây", "", "warning");
+    else {
+      socket.emit("createRoom", {'hostName':curUser.name,'newRoomType':newRoomType,'newRoomPassword':newRoomPassword,'newRoomTimePerRound':newRoomTimePerRound});
+      socket.emit("joinRoom",  {"roomId":(playRooms.length + 1),"playerId":curUser._id});
+      const path = "room/" + (playRooms.length + 1);
+      history.push(path);
+    }
   }
 
   const joinRoom = (id,roomType,roomPassword) => {
@@ -411,10 +423,12 @@ export default function Dashboard(props) {
                       <p >
                         Vui lòng chọn thời gian giới hạn mỗi lượt:
                       </p>
-                      <RadioGroup aria-label="gender" name="gender2" value={newRoomTimePerRound} onChange={handleNewRoomTimePerRoundChange}>
-                        <FormControlLabel value="50" control={<Radio />} label="50s" />
-                        <FormControlLabel value="100" control={<Radio />} label="100s" />
-                        <FormControlLabel value="150" control={<Radio />} label="150s" />
+                      <RadioGroup aria-label="gender" name="gender2" defaultValue="50" onChange={handleNewRoomTimePerRoundChange}>
+                        <FormControlLabel value="50" control={<Radio />} label="50 giây" i/>
+                        <FormControlLabel value="100" control={<Radio />} label="100 giây" />
+                        <FormControlLabel value="150" control={<Radio />} label="150 giây" />
+                        <FormControlLabel value="custom" control={<Radio />} label="Tự quy định" />
+                        {customTPR ? <Input placeholder="Thời gian (tối thiểu 5 giấy, tối đa 200 giây)" value={newRoomTimePerRound} onChange={(e) => setNewRoomTimePerRound(e.target.value)}/> : <></>}
                       </RadioGroup>
                       <Button variant="contained" color="primary" onClick={() => createRoom()} style={{margin:'10px'}}>Tạo phòng</Button>
                       </div>
