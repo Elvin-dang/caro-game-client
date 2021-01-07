@@ -328,7 +328,9 @@ export default function Room(props) {
     }
 
     const handleOverTime = (id) => {
-        if(id === 1 && curUser._id === room.player1.id) {
+        console.log(id);
+        console.log(room);
+        if(id === 1) {
             socket.emit("gameResult", {
                 room: {
                     ...room,
@@ -337,7 +339,7 @@ export default function Room(props) {
                 winner: 2,
                 resultType: "winLose" // Còn 1 type nữa là "draw"
             });
-        } else if (id === 2 && curUser._id === room.player2.id) {
+        } else if (id === 2) {
             socket.emit("gameResult", {
                 room: {
                     ...room,
