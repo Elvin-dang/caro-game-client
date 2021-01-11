@@ -1,6 +1,8 @@
 import React from 'react';
 import { GoogleLogin } from 'react-google-login';
 import oauthApi from '../api/oauthApi';
+import swal from 'sweetalert';
+
 export default function Google(props) {
 	const { setIsRedirect, setIsLoadingTrue, setIsLoadingFalse } = props;
 	const responseGoogle = async(response) => {
@@ -20,14 +22,17 @@ export default function Google(props) {
 					setIsRedirect();
 				} else {
 					setIsLoadingFalse();
-					alert("Please try again");
+					swal("Đã xảy ra lỗi khi đăng nhập bằng google", "", "error");
 				}
 			}
 			else setIsLoadingFalse();
 		}
-		catch(e){
+		catch(err){
 			setIsLoadingFalse();
-			alert("Please try again!");
+			if(err.response.status === 400) swal(err.response.data.details[0].message, "", "warning");
+			else if(err.response.status === 401) swal(err.response.data.message, "", "error");
+			else if(err.response.status === 403) swal(err.response.data.message, "", "error");
+			else swal("Server không phản hồi", "", "error");
 		}
 	}
 	return (

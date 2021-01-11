@@ -1,6 +1,8 @@
 import React from 'react';
 import FacebookLogin from 'react-facebook-login';
 import oauthApi from '../api/oauthApi';
+import swal from 'sweetalert';
+
 export default function Facebook(props) {
 	const { setIsRedirect, setIsLoadingTrue, setIsLoadingFalse } = props;
 	const responseFacebook = async (response) => {
@@ -19,11 +21,14 @@ export default function Facebook(props) {
 				setIsRedirect();
 			} else {
 				setIsLoadingFalse();
-				alert("Please try again");
+				swal("Đã xảy ra lỗi khi đăng nhập bằng facebook", "", "error");
 			}
-		}catch(e){
+		}catch(err){
 			setIsLoadingFalse();
-			alert("Please try again!");
+			if(err.response.status === 400) swal(err.response.data.details[0].message, "", "warning");
+			else if(err.response.status === 401) swal(err.response.data.message, "", "error");
+			else if(err.response.status === 403) swal(err.response.data.message, "", "error");
+			else swal("Server không phản hồi", "", "error");
 		}
 	};
 	const componentClicked = () => {
