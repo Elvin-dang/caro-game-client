@@ -124,7 +124,6 @@ export default function Dashboard(props) {
   const [isFindQuickGame,setIsFindQuickGame] = useState(false);
   const [isAcceptInvite,setIsAcceptInvite] = useState({"isaccept":false,"room":null});
   const [customTPR, setCustomTPR] = useState(false);
-
   const handleNewRoomTypeChange = (event) => {
     setNewRoomType(event.target.value);
   };
@@ -282,7 +281,7 @@ export default function Dashboard(props) {
   };
 
   const quickPlay = () =>{
-    socket.emit("joinQuickGame", {"id":curUser._id});
+    socket.emit("joinQuickGame", {"id":curUser._id,"elo":curUser.elo});
     setIsFindQuickGame(true);
     swal({
       title: "Chơi nhanh",
