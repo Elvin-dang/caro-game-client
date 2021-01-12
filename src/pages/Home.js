@@ -7,7 +7,7 @@ import Room from '../components/Room';
 import MessageList from '../components/MessageList';
 import TopPlayer from '../pages/TopPlayer'
 function Home() {
-	const socket = io.connect(process.env.REACT_APP_test_api_domain_withoutAPI,
+	const socket = io.connect(process.env.REACT_APP_api_domain_withoutAPI,
 		{
 			transports: ['websocket'], 
 			upgrade: false
