@@ -197,7 +197,6 @@ export default function Dashboard(props) {
     socket.on('updateUsersOnlineList', (response) => setUsersOnline(response)); 
     socket.on('updateRoomsList',  (response) => setPlayRooms(response));
     socket.on('inviteToPlay', (response) => {
-      console.log(response);
       if(response.invitePlayerId === curUser._id)
       {
         swal({
@@ -235,7 +234,7 @@ export default function Dashboard(props) {
     else {
       socket.emit("createRoom", {'hostName':curUser.name,'newRoomType':newRoomType,'newRoomPassword':newRoomPassword,'newRoomTimePerRound':newRoomTimePerRound});
       socket.emit("joinRoom",  {"roomId":(playRooms.length + 1),"playerId":curUser._id});
-      const path = "room/" + (playRooms.length + 1);
+      const path = (playRooms.length + 1).toString();
       history.push(path);
     }
   }
@@ -244,7 +243,7 @@ export default function Dashboard(props) {
     if(roomType === 'unlock')
     {
       socket.emit("joinRoom", {"roomId":id,"playerId":curUser._id});
-      const path = "room/" + id;
+      const path = id.toString();
       history.push(path);
     }
     else 
@@ -258,7 +257,7 @@ export default function Dashboard(props) {
     if(joinRoomPassword === roomSelected.password)
     {
       socket.emit("joinRoom", {"roomId":roomSelected.id,"playerId":curUser._id});
-      const path = "room/" + roomSelected.id;
+      const path = roomSelected.id.toString();
       history.push(path);
     }
     else {
@@ -269,7 +268,6 @@ export default function Dashboard(props) {
   const joinRoomById = () =>{
     for (let a=0; a < playRooms.length; a++) {
       if (playRooms[a].roomId == idJoinRoom) {
-        console.log(playRooms[a]);
         joinRoom(playRooms[a].roomId,playRooms[a].type,playRooms[a].password)
         break;
       }
@@ -299,7 +297,6 @@ export default function Dashboard(props) {
   {
     for (let a=0; a < playRooms.length; a++) {
       if (playRooms[a].roomId == isAcceptInvite.room) {
-        console.log('accept invited');
         joinRoom(playRooms[a].roomId,playRooms[a].type,playRooms[a].password);
 
         break;
