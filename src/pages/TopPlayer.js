@@ -85,7 +85,7 @@ export default function TopPlayer() {
                     <StyledTableCell align="center">{player.elo}</StyledTableCell>
                     <StyledTableCell align="center">{player.rank}</StyledTableCell>
                     <StyledTableCell align="center">{player.game.total}</StyledTableCell>
-                    <StyledTableCell align="center">{(player.game.total==0 ? "0 %" : (Math.round(player.game.win * 100)/player.game.total).toFixed(2) + " %")}</StyledTableCell>
+                    <StyledTableCell align="center">{(player.game.total === 0 ? "0 %" : (Math.round(player.game.win * 100)/player.game.total).toFixed(2) + " %")}</StyledTableCell>
                     <StyledTableCell align="center">{player.game.win}/{player.game.lose}/{player.game.draw}</StyledTableCell>
                     <StyledTableCell align="right">
                       <IconButton href={'/user/' + player._id}>
